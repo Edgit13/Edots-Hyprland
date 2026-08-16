@@ -1,0 +1,439 @@
+@import url("gtk-colors.css");
+
+/* ===== Ricelin GTK4 ===== */
+
+* {
+  caret-color: @accent_color;
+}
+
+window {
+  background: @window_bg_color;
+}
+
+/* ===== Плавні переходи ===== */
+
+button,
+switch,
+switch slider,
+.navigation-sidebar row,
+tab,
+toast,
+entry,
+scrollbar slider,
+.boxed-list row,
+checkbutton check,
+radiobutton radio {
+  transition: background-color 150ms ease-in-out,
+              color 150ms ease-in-out,
+              box-shadow 150ms ease-in-out,
+              border-color 150ms ease-in-out,
+              transform 80ms ease-out;
+}
+
+button:hover,
+.navigation-sidebar row:hover,
+tab:hover {
+  transition-duration: 100ms;
+}
+
+button:active {
+  transition-duration: 60ms;
+  transform: scale(0.97);
+}
+
+/* ===== Ripple-ефект на кнопках при натисканні ===== */
+
+@keyframes button-ripple {
+  0% {
+    box-shadow: 0 0 0 0 alpha(@accent_color, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 14px alpha(@accent_color, 0);
+  }
+}
+
+button:active {
+  animation: button-ripple 500ms ease-out;
+}
+
+/* ===== Шкала заокруглень ===== */
+
+button {
+  border-radius: 10px;
+}
+
+.text-button {
+  border-radius: 999px;
+}
+
+.text-button,
+.text-button * {
+  font-weight: 500;
+}
+
+headerbar {
+  background: @sidebar_bg_color;
+  color: @sidebar_fg_color;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+headerbar button {
+  border-radius: 999px;
+}
+
+/* ===== Поля вводу з "дихаючим" фокусом ===== */
+
+@keyframes focus-breathe {
+  0%   { box-shadow: 0 0 0 2px alpha(@accent_color, 0.25); }
+  50%  { box-shadow: 0 0 0 4px alpha(@accent_color, 0.15); }
+  100% { box-shadow: 0 0 0 2px alpha(@accent_color, 0.25); }
+}
+
+entry,
+spinbutton,
+.entry {
+  background: @view_bg_color;
+  color: @view_fg_color;
+  border: 1px solid alpha(@borders, 1);
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-shadow: none;
+}
+
+entry:focus-within,
+spinbutton:focus-within {
+  border-color: @accent_color;
+  animation: focus-breathe 2.4s ease-in-out infinite;
+}
+
+/* ===== Checkbox / radio ===== */
+
+checkbutton check {
+  border-radius: 6px;
+  border: 1.5px solid alpha(@borders, 1);
+}
+
+checkbutton check:checked {
+  background: @accent_color;
+  border-color: @accent_color;
+}
+
+radiobutton radio {
+  border-radius: 999px;
+  border: 1.5px solid alpha(@borders, 1);
+}
+
+radiobutton radio:checked {
+  background: @accent_color;
+  border-color: @accent_color;
+}
+
+/* ===== Скролбари ===== */
+
+scrollbar {
+  background: transparent;
+}
+
+scrollbar slider {
+  background: alpha(@window_fg_color, 0.18);
+  border-radius: 999px;
+  min-width: 8px;
+  min-height: 8px;
+}
+
+scrollbar slider:hover {
+  background: alpha(@accent_color, 0.4);
+}
+
+scrollbar slider:active {
+  background: @accent_color;
+}
+
+/* ===== Списки / картки ===== */
+
+.boxed-list {
+  box-shadow: none;
+  background-color: @window_bg_color;
+}
+
+.boxed-list row {
+  background: @card_bg_color;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 2px;
+}
+
+.boxed-list row:first-child {
+  border-radius: 16px 16px 10px 10px;
+}
+
+.boxed-list row:last-child {
+  border-radius: 10px 10px 16px 16px;
+  margin-bottom: 0;
+}
+
+.boxed-list row:first-child:last-child {
+  border-radius: 16px;
+}
+
+.boxed-list row.activatable:hover {
+  background-color: alpha(@accent_color, 0.08);
+}
+
+.boxed-list row.activatable:active {
+  background-color: alpha(@accent_color, 0.16);
+}
+
+/* ===== Сайдбар / навігація ===== */
+
+.navigation-sidebar {
+  padding: 6px;
+  background: @sidebar_bg_color;
+}
+
+.navigation-sidebar row * {
+  color: @sidebar_fg_color;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.navigation-sidebar row {
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin: 1px 4px;
+  min-height: 20px;
+}
+
+.navigation-sidebar row:hover {
+  background: alpha(@accent_color, 0.08);
+}
+
+.navigation-sidebar row:active {
+  background: alpha(@accent_color, 0.14);
+}
+
+@keyframes selected-pulse {
+  0%   { box-shadow: 0 2px 8px alpha(@accent_color, 0.35); }
+  50%  { box-shadow: 0 2px 16px alpha(@accent_color, 0.55); }
+  100% { box-shadow: 0 2px 8px alpha(@accent_color, 0.35); }
+}
+
+.navigation-sidebar row:selected {
+  background: @accent_bg_color;
+  animation: selected-pulse 3s ease-in-out infinite;
+}
+
+.navigation-sidebar row:selected * {
+  color: @accent_fg_color;
+}
+
+/* ===== Перемикач зі світінням при увімкненні ===== */
+
+@keyframes switch-glow {
+  0%   { box-shadow: 0 0 0 0 alpha(@accent_color, 0.6); }
+  100% { box-shadow: 0 0 8px 2px alpha(@accent_color, 0); }
+}
+
+switch {
+  background: @card_bg_color;
+  border: alpha(@borders, 1) 2px solid;
+  padding: 0;
+  border-radius: 999px;
+}
+
+switch:checked {
+  background: @accent_color;
+  border-color: @accent_color;
+  animation: switch-glow 600ms ease-out;
+}
+
+switch slider {
+  background: @window_fg_color;
+  margin: 3px;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px alpha(black, 0.3);
+}
+
+switch:checked slider {
+  background: @accent_fg_color;
+  outline: transparent 2px solid;
+  margin: 0px;
+}
+
+/* ===== Toast — виринає знизу ===== */
+
+@keyframes toast-in {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+toast {
+  border-radius: 999px;
+  padding: 6px 6px 6px 10px;
+  background-color: @headerbar_bg_color;
+  color: @window_fg_color;
+  box-shadow: 0 8px 24px alpha(black, 0.5);
+  animation: toast-in 220ms ease-out;
+}
+
+toast button {
+  background-color: transparent;
+  color: @accent_color;
+  border-radius: 999px;
+}
+
+toast button:hover {
+  background-color: alpha(@accent_color, 0.1);
+}
+
+/* ===== Вкладки ===== */
+
+tabbox tabboxchild tab,
+tabbox tabboxchild {
+  background: transparent;
+  padding: 0 8px 3px;
+  border-radius: 999px;
+}
+
+tab:hover {
+  background: alpha(@accent_color, 0.08);
+}
+
+tab:selected {
+  background: alpha(@accent_color, 0.14);
+}
+
+tab .tab-title label {
+  border: none;
+  font-weight: 500;
+}
+
+tab:selected .tab-title label {
+  color: @accent_color;
+}
+
+/* ===== Popover / меню — плавна поява ===== */
+
+@keyframes popover-in {
+  0%   { opacity: 0; transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+popover.background {
+  padding: 6px;
+}
+
+popover contents,
+popover arrow {
+  background: @popover_bg_color;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px alpha(black, 0.45),
+              0 0 0 1px alpha(@borders, 1);
+  animation: popover-in 140ms ease-out;
+}
+
+popover .navigation-sidebar {
+  padding: 4px;
+}
+
+popover .navigation-sidebar row {
+  padding: 7px 10px;
+  margin: 1px 3px;
+}
+
+popover listview.view row {
+  background: transparent;
+  border-radius: 8px;
+  margin: 2px 4px;
+  padding: 6px 8px;
+}
+
+popover listview.view row:hover {
+  background: alpha(@accent_color, 0.1);
+}
+
+popover listview.view row:selected {
+  background: alpha(@accent_color, 0.18);
+}
+
+modelbutton {
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+modelbutton * {
+  color: @popover_fg_color;
+}
+
+modelbutton:hover {
+  background-color: alpha(@accent_color, 0.1);
+}
+
+/* ===== Діалоги — плавна поява ===== */
+
+@keyframes dialog-in {
+  0%   { opacity: 0; transform: scale(0.96) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+window.dialog,
+messagedialog {
+  border-radius: 18px;
+  box-shadow: 0 20px 48px alpha(black, 0.5);
+  animation: dialog-in 180ms ease-out;
+}
+
+/* ===== Tooltip ===== */
+
+@keyframes tooltip-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+tooltip {
+  background-color: @headerbar_bg_color;
+  color: @window_fg_color;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px alpha(black, 0.4);
+  animation: tooltip-in 120ms ease-out;
+}
+
+/* ===== Progress bar з рухомим shimmer ===== */
+
+@keyframes progress-shimmer {
+  0%   { background-position: -40px 0; }
+  100% { background-position: 40px 0; }
+}
+
+progressbar progress,
+progressbar trough {
+  border-radius: 999px;
+  min-height: 6px;
+}
+
+progressbar trough {
+  background: alpha(@window_fg_color, 0.1);
+}
+
+progressbar progress {
+  background-image: linear-gradient(
+    90deg,
+    @accent_color 0%,
+    alpha(@accent_color, 0.6) 50%,
+    @accent_color 100%
+  );
+  background-size: 40px 100%;
+  animation: progress-shimmer 1.2s linear infinite;
+}
+
+/* ===== Спінер — легке додаткове світіння ===== */
+
+spinner {
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px alpha(@accent_color, 0.5));
+}
