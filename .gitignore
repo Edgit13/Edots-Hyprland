@@ -7,6 +7,9 @@ hypr/colors.json
 gtk-3.0/gtk-colors.css
 gtk-4.0/gtk-colors.css
 quickshell/bar/Colors.qml
+rofi/colors.rasi
+swaync/colors.css
+alacritty/colors.toml
 **/firefox-colors.css
 **/fish-colors.fish
 

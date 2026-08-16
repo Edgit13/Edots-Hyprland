@@ -1,0 +1,41 @@
+[window]
+opacity = 0.85
+blur = true
+padding = { x = 12, y = 12 }
+
+[colors]
+transparent_background_colors = true
+
+# Gruvbox Material Dark Hard Theme for Alacritty
+[colors.primary]
+background = "#1d2021"
+foreground = "#e2d3ba"
+
+[colors.normal]
+black   = "#282828"
+red     = "#ea6962"
+green   = "#a9b665"
+yellow  = "#d8a657"
+blue    = "#7daea3"
+magenta = "#d3869b"
+cyan    = "#89b482"
+white   = "#d4be98"
+
+[colors.bright]
+black   = "#ea6962"
+red     = "#ea6962"
+green   = "#a9b665"
+yellow  = "#d8a657"
+blue    = "#7daea3"
+magenta = "#d3869b"
+cyan    = "#89b482"
+white   = "#e2d3ba"
+
+[colors.cursor]
+text   = "#1d2021"
+cursor = "#e2d3ba"
+
+[colors.selection]
+text       = "#1d2021"
+background = "#e2d3ba"
+

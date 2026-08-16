@@ -1,0 +1,224 @@
+/* ==========================================================================
+   userChrome.css — Ricelin theme for Firefox
+   Pulls live colors from ~/.config/firefox-colors.css, written by
+   wallcolors.py on every wallpaper change (same pipeline as your
+   kitty/hypr/gtk/swaync colors).
+
+   SETUP:
+   1. about:config -> toolkit.legacyUserProfileCustomizations.stylesheet -> true
+   2. Put this file at: <profile>/chrome/userChrome.css
+   3. Restart Firefox
+   ========================================================================== */
+
+@import url("file:///home/eduard/.config/firefox-colors.css");
+
+:root {
+  /* Fallbacks so the UI doesn't break before wallcolors.py has run once.
+     Named --uc-* (not --wc-*) on purpose: a custom property that
+     references itself via var(), even with a fallback, is treated as
+     a cycle and resolves to invalid rather than the fallback. */
+  --uc-bg0: var(--wc-bg0, #0e0f12);
+  --uc-bg1: var(--wc-bg1, #16181d);
+  --uc-bg2: var(--wc-bg2, #1e2127);
+  --uc-bg3: var(--wc-bg3, #262a32);
+  --uc-fg:  var(--wc-fg,  #d8dbe2);
+  --uc-accent: var(--wc-accent, #8ab4f8);
+  --uc-red: var(--wc-red, #e06c75);
+  --uc-grey1: var(--wc-grey1, #5b6270);
+  --uc-accent-rgb: var(--wc-accent-rgb, 138, 180, 248);
+  --uc-fg-rgb: var(--wc-fg-rgb, 216, 219, 226);
+
+  --uc-radius: 10px;
+  --uc-radius-pill: 999px;
+  --uc-font: "JetBrainsMono Nerd Font Propo", "SF Pro Display", sans-serif;
+}
+
+/* ---------- Base window chrome ---------- */
+:root,
+#navigator-toolbox,
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar {
+  background-color: var(--uc-bg0) !important;
+  color: var(--uc-fg) !important;
+  font-family: var(--uc-font) !important;
+}
+
+#titlebar {
+  background: var(--uc-bg0) !important;
+}
+
+toolbar {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Kill the harsh separator lines Firefox draws between toolbars */
+#navigator-toolbox::after,
+#nav-bar::before,
+#TabsToolbar::after {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Tabs: rounded pills like the bar's workspace pills ---------- */
+#TabsToolbar {
+  padding: 4px 6px !important;
+}
+
+.tabbrowser-tab {
+  border-radius: var(--uc-radius) !important;
+  margin: 2px 2px !important;
+}
+
+.tab-background {
+  border-radius: var(--uc-radius) !important;
+  background-color: transparent !important;
+  transition: background-color 120ms ease-out;
+}
+
+.tabbrowser-tab:hover .tab-background {
+  background-color: var(--uc-bg2) !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-background {
+  background-color: var(--uc-bg3) !important;
+  box-shadow: inset 0 0 0 1px rgba(var(--uc-accent-rgb), 0.35) !important;
+}
+
+.tab-label {
+  color: var(--uc-fg) !important;
+  font-size: 12px !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-label {
+  color: var(--uc-accent) !important;
+}
+
+/* Close button + new-tab button ghost until hovered */
+.tab-close-button,
+#tabs-newtab-button {
+  border-radius: var(--uc-radius-pill) !important;
+}
+
+.tab-close-button:hover,
+#tabs-newtab-button:hover {
+  background-color: var(--uc-bg3) !important;
+}
+
+/* ---------- URL bar: floating pill, matches GameMode/notch pill style ---------- */
+#nav-bar {
+  padding: 6px 8px !important;
+}
+
+#urlbar,
+#searchbar {
+  background: transparent !important;
+}
+
+#urlbar-background {
+  background-color: var(--uc-bg1) !important;
+  border: 1px solid rgba(var(--uc-fg-rgb), 0.08) !important;
+  border-radius: var(--uc-radius-pill) !important;
+  box-shadow: none !important;
+}
+
+#urlbar[focused="true"] #urlbar-background {
+  border-color: rgba(var(--uc-accent-rgb), 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(var(--uc-accent-rgb), 0.12) !important;
+}
+
+#urlbar-input,
+.urlbar-input-box {
+  color: var(--uc-fg) !important;
+  font-family: var(--uc-font) !important;
+  font-size: 13px !important;
+}
+
+/* Suggestion / autocomplete panel */
+.urlbarView {
+  background: var(--uc-bg1) !important;
+  color: var(--uc-fg) !important;
+  border-radius: var(--uc-radius) !important;
+  border: 1px solid rgba(var(--uc-fg-rgb), 0.08) !important;
+}
+
+.urlbarView-row[selected] {
+  background-color: var(--uc-bg3) !important;
+  border-radius: 8px !important;
+}
+
+/* ---------- Toolbar buttons ---------- */
+.toolbarbutton-1 {
+  border-radius: 8px !important;
+  color: var(--uc-fg) !important;
+}
+
+.toolbarbutton-1:hover {
+  background-color: var(--uc-bg2) !important;
+}
+
+.toolbarbutton-1:hover:active,
+.toolbarbutton-1[open="true"] {
+  background-color: var(--uc-bg3) !important;
+}
+
+/* ---------- Bookmarks toolbar ---------- */
+#PersonalToolbar {
+  border-top: none !important;
+}
+
+.bookmark-item {
+  border-radius: 6px !important;
+  color: var(--uc-fg) !important;
+}
+
+.bookmark-item:hover {
+  background-color: var(--uc-bg2) !important;
+}
+
+/* ---------- Panels / dropdowns (hamburger menu, etc.) ---------- */
+panel {
+  --panel-background: var(--uc-bg1) !important;
+  --panel-color: var(--uc-fg) !important;
+  --arrowpanel-border-color: rgba(var(--uc-fg-rgb), 0.08) !important;
+}
+
+menupopup,
+panelview {
+  background: var(--uc-bg1) !important;
+  color: var(--uc-fg) !important;
+}
+
+menuitem:hover,
+.subviewbutton:hover {
+  background-color: var(--uc-bg3) !important;
+  border-radius: 6px !important;
+}
+
+/* ---------- Scrollbar (chrome only, not web content) ---------- */
+scrollbar {
+  background-color: var(--uc-bg0) !important;
+}
+
+scrollbar thumb {
+  background-color: var(--uc-bg3) !important;
+  border-radius: var(--uc-radius-pill) !important;
+}
+
+/* ---------- Sidebar ---------- */
+#sidebar-box {
+  background-color: var(--uc-bg0) !important;
+  color: var(--uc-fg) !important;
+}
+
+#sidebar-header {
+  background-color: var(--uc-bg1) !important;
+}
+
+/* ---------- Findbar / notification bars ---------- */
+findbar,
+notification-message {
+  background-color: var(--uc-bg1) !important;
+  color: var(--uc-fg) !important;
+}

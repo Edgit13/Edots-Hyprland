@@ -1,0 +1,79 @@
+
+@import "~/.config/rofi/colors.rasi"
+
+* {
+    font: "Fira Code 11";
+    background-color: transparent;
+    text-color: @foreground;
+    margin: 0px;
+    padding: 0px;
+    spacing: 0px;
+}
+
+window {
+    background-color: @background;
+    border-color: @accent;
+    border: 2px;
+    border-radius: 12px;
+    width: 35%;
+    padding: 16px;
+}
+
+mainbox {
+    children: [inputbar, listview];
+}
+
+inputbar {
+    background-color: @background-alt;
+    border-radius: 6px;
+    padding: 10px;
+    margin: 0px 0px 12px 0px;
+    children: [prompt, entry];
+}
+
+prompt {
+    text-color: @accent;
+    padding: 0px 8px 0px 0px;
+}
+
+entry {
+    text-color: @foreground;
+    placeholder: "Search...";
+    placeholder-color: @background-alt;
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    fixed-height: true;
+}
+
+element {
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element selected.normal {
+    background-color: @accent;
+    text-color: @background;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element normal.urgent, element alternate.urgent {
+    background-color: @urgent;
+    text-color: @background;
+}
+
+element normal.active, element alternate.active {
+    background-color: @active;
+    text-color: @background;
+}

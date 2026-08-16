@@ -1,0 +1,197 @@
+/* ==========================================================================
+   userContent.css — Ricelin theme for Firefox internal pages
+   (about:addons, about:newtab, about:config, about:logins — НЕ about:preferences)
+
+   Ці сторінки — це "content", а не "chrome", тому колір тут задається
+   окремо від userChrome.css через @-moz-document.
+
+   Використовує ту саму палітру з ~/.config/firefox-colors.css.
+
+   НАЛАШТУВАННЯ:
+   1. about:config -> toolkit.legacyUserProfileCustomizations.stylesheet -> true
+      (той самий флаг, що й для userChrome.css)
+   2. Покласти файл поруч з userChrome.css: <профіль>/chrome/userContent.css
+   3. Перезапустити Firefox
+   ========================================================================== */
+
+@import url("file:///home/eduard/.config/firefox-colors.css");
+
+@-moz-document url-prefix("about:") {
+  :root {
+    --uc-bg0: var(--wc-bg0, #0e0f12);
+    --uc-bg1: var(--wc-bg1, #16181d);
+    --uc-bg2: var(--wc-bg2, #1e2127);
+    --uc-bg3: var(--wc-bg3, #262a32);
+    --uc-fg:  var(--wc-fg,  #d8dbe2);
+    --uc-accent: var(--wc-accent, #8ab4f8);
+    --uc-red: var(--wc-red, #e06c75);
+    --uc-grey1: var(--wc-grey1, #5b6270);
+    --uc-accent-rgb: var(--wc-accent-rgb, 138, 180, 248);
+
+    --uc-radius: 10px;
+    --uc-font: "JetBrainsMono Nerd Font Propo", "SF Pro Display", sans-serif;
+  }
+}
+
+/* ==========================================================================
+   about:addons — Extensions & Themes manager
+   ========================================================================== */
+@-moz-document url-prefix("about:addons") {
+  body, html {
+    background-color: var(--uc-bg0) !important;
+    color: var(--uc-fg) !important;
+    font-family: var(--uc-font) !important;
+  }
+
+  named-deck-button,
+  categories-box button,
+  .category {
+    background-color: transparent !important;
+    color: var(--uc-fg) !important;
+    border-radius: var(--uc-radius) !important;
+  }
+
+  named-deck-button:hover,
+  categories-box button:hover {
+    background-color: var(--uc-bg2) !important;
+  }
+
+  named-deck-button[selected],
+  .category[selected] {
+    background-color: var(--uc-bg3) !important;
+    color: var(--uc-accent) !important;
+  }
+
+  addon-card,
+  .card,
+  .addon {
+    background-color: var(--uc-bg1) !important;
+    border-radius: var(--uc-radius) !important;
+    border: 1px solid rgba(var(--uc-accent-rgb), 0.08) !important;
+  }
+
+  addon-card:hover,
+  .card:hover {
+    border-color: rgba(var(--uc-accent-rgb), 0.25) !important;
+  }
+
+  button {
+    background-color: var(--uc-bg2) !important;
+    color: var(--uc-fg) !important;
+    border-radius: 8px !important;
+  }
+
+  button:hover {
+    background-color: var(--uc-bg3) !important;
+  }
+
+  a {
+    color: var(--uc-accent) !important;
+  }
+}
+
+/* ==========================================================================
+   about:newtab / about:home — New tab page
+   ========================================================================== */
+@-moz-document url-prefix("about:newtab"), url-prefix("about:home") {
+  body,
+  .welcome-panel-header,
+  main {
+    background-color: var(--uc-bg0) !important;
+  }
+
+  .search-wrapper input {
+    background-color: var(--uc-bg1) !important;
+    color: var(--uc-fg) !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(var(--uc-accent-rgb), 0.12) !important;
+  }
+
+  .top-site-outer .title,
+  .section-title,
+  h1, h2 {
+    color: var(--uc-fg) !important;
+    font-family: var(--uc-font) !important;
+  }
+
+  .top-site-outer .tile {
+    background-color: var(--uc-bg1) !important;
+    border-radius: var(--uc-radius) !important;
+    border: 1px solid rgba(var(--uc-accent-rgb), 0.06) !important;
+  }
+
+  .card-outer {
+    background-color: var(--uc-bg1) !important;
+    border-radius: var(--uc-radius) !important;
+  }
+}
+
+/* ==========================================================================
+   about:config — Advanced preferences editor
+   ========================================================================== */
+@-moz-document url-prefix("about:config") {
+  body, html {
+    background-color: var(--uc-bg0) !important;
+    color: var(--uc-fg) !important;
+    font-family: var(--uc-font) !important;
+  }
+
+  #search {
+    background-color: var(--uc-bg2) !important;
+    color: var(--uc-fg) !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(var(--uc-accent-rgb), 0.12) !important;
+  }
+
+  #prefs tr:hover {
+    background-color: var(--uc-bg1) !important;
+  }
+
+  .pref-name {
+    color: var(--uc-fg) !important;
+  }
+
+  .pref-value {
+    color: var(--uc-accent) !important;
+  }
+
+  .button-reset,
+  .button-add,
+  .button-edit,
+  .button-save {
+    color: var(--uc-accent) !important;
+  }
+}
+
+/* ==========================================================================
+   about:logins — Saved passwords
+   ========================================================================== */
+@-moz-document url-prefix("about:logins") {
+  body, html,
+  .container {
+    background-color: var(--uc-bg0) !important;
+    color: var(--uc-fg) !important;
+    font-family: var(--uc-font) !important;
+  }
+
+  .login-list,
+  login-list {
+    background-color: var(--uc-bg1) !important;
+    border-right: 1px solid rgba(var(--uc-accent-rgb), 0.08) !important;
+  }
+
+  .login-list-item[selected] {
+    background-color: var(--uc-bg3) !important;
+  }
+
+  login-item,
+  .login-item {
+    background-color: var(--uc-bg0) !important;
+  }
+
+  button {
+    background-color: var(--uc-bg2) !important;
+    color: var(--uc-fg) !important;
+    border-radius: 8px !important;
+  }
+}
