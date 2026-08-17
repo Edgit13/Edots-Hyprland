@@ -59,10 +59,14 @@ ShellRoot {
     // групу, як у референсі (github.com/patheonsceo/Dynamic-island-for-arch),
     // а не один суцільний бар.
     component IslandPill: Rectangle {
-        radius: height / 2
+        radius: GameModeState.active ? 0 : height / 2
         color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, 1.0)
-        border.width: 1
+        border.width: GameModeState.active ? 0 : 1
         border.color: Qt.rgba(Colors.fg.r, Colors.fg.g, Colors.fg.b, 0.12)
+
+        Behavior on radius {
+            NumberAnimation { duration: 150 }
+        }
     }
 
     Variants {
@@ -133,17 +137,21 @@ ShellRoot {
             Rectangle {
                 id: notchPill
                 anchors.top: parent.top
-                anchors.topMargin: 4
+                anchors.topMargin: GameModeState.active ? 0 : 4
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 width: 320
                 height: root.notchIdleHeight
 
-                radius: height / 2
+                radius: GameModeState.active ? 0 : height / 2
                 color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, 0.97)
-                border.color: Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, 0.25)
-                border.width: 1
+                border.color: Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, GameModeState.active ? 0 : 0.25)
+                border.width: GameModeState.active ? 0 : 1
                 clip: true
+
+                Behavior on radius {
+                    NumberAnimation { duration: 150 }
+                }
 
                 Behavior on border.color {
                     ColorAnimation { duration: 260; easing.type: Easing.OutCubic }
@@ -210,8 +218,8 @@ ShellRoot {
                 left: true
             }
 
-            margins.top: 4
-            margins.left: 4
+            margins.top: GameModeState.active ? 0 : 4
+            margins.left: GameModeState.active ? 0 : 4
 
             implicitWidth: leftRow.implicitWidth
             implicitHeight: root.notchIdleHeight
@@ -272,8 +280,8 @@ ShellRoot {
                 right: true
             }
 
-            margins.top: 4
-            margins.right: 4
+            margins.top: GameModeState.active ? 0 : 4
+            margins.right: GameModeState.active ? 0 : 4
 
             implicitWidth: rightRow.implicitWidth
             implicitHeight: root.notchIdleHeight

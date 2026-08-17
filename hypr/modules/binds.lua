@@ -8,11 +8,10 @@ local fileManager = "nautilus"
 local menu = "rofi -show drun"
 local screen = "~/.local/bin/rishot"
 local screen_rec = "hyprscreen"
-local browser = "firefox"
+local browser = "vivaldi"
 local reboot = "reboot"
 local cliphistory = "cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 local lock = "hyprlock -c ~/.config/hypr/hyprlock/hyprlock.conf"
-local settings = "qs -c bar ipc call menu toggle"
 
 ---------------------
 ---- KEYBINDINGS ----
@@ -25,7 +24,6 @@ hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + U ", hl.dsp.exec_cmd(screen))
-hl.bind(mainMod .. " + S ", hl.dsp.exec_cmd(settings))
 hl.bind(mainMod .. " + END ", hl.dsp.exec_cmd(reboot))
 hl.bind(mainMod .. " + L ", hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + SHIFT + V ", hl.dsp.exec_cmd(cliphistory))
@@ -37,10 +35,11 @@ hl.bind(
 	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
 )
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
--- Було: toggle floating. Тепер Super+V відкриває буфер обміну в барі.
--- Якщо floating-toggle теж потрібен — розкоментуй запасний бінд нижче.
+-- Було: toggle floating. Тепер Super+V відкриває буфер обміну в барі —
+-- якщо floating-toggle досі потрібен, перевісь на інший бінд (нижче
+-- залишив коментар з варіантом).
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("qs -c bar ipc call clipboard toggle"))
--- hl.bind(mainMod .. " + ALT + V", hl.dsp.window.float({ action = "toggle" }))
+-- hl.bind(mainMod .. " + ALT + V", hl.dsp.window.float({ action = "toggle" })) -- розкоментуй, якщо floating-toggle теж потрібен
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("~/.config/quickshell/scripts/gamemode.sh"))
 hl.bind(mainMod .. " + F2", hl.dsp.exec_cmd("qs -c bar ipc call dashboard toggle"))
 hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(menu))
@@ -62,7 +61,7 @@ for i = 1, 10 do
 end
 
 -- Example special workspace (scratchpad)
-hl.bind(mainMod .. " + D", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
 -- Scroll through existing workspaces with mainMod + scroll
