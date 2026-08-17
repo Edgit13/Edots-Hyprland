@@ -16,6 +16,7 @@ require("modules/autostart")
 require("modules/input")
 require("modules/rules")
 require("modules/decorations")
+require("modules/hyprglass")
 
 -----------------------
 ----- PERMISSIONS -----

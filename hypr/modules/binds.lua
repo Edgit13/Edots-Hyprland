@@ -37,7 +37,12 @@ hl.bind(
 	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
 )
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+-- Було: toggle floating. Тепер Super+V відкриває буфер обміну в барі.
+-- Якщо floating-toggle теж потрібен — розкоментуй запасний бінд нижче.
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("qs -c bar ipc call clipboard toggle"))
+-- hl.bind(mainMod .. " + ALT + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("~/.config/quickshell/scripts/gamemode.sh"))
+hl.bind(mainMod .. " + F2", hl.dsp.exec_cmd("qs -c bar ipc call dashboard toggle"))
 hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only

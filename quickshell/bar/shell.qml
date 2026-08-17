@@ -41,6 +41,20 @@ ShellRoot {
         function close(): void { menuOpen = false }
     }
 
+    IpcHandler {
+        target: "wallpaper"
+        function toggle(): void { wallOpen = !wallOpen }
+        function open(): void { wallOpen = true }
+        function close(): void { wallOpen = false }
+    }
+
+    IpcHandler {
+        target: "clipboard"
+        function toggle(): void { clipOpen = !clipOpen }
+        function open(): void { clipOpen = true }
+        function close(): void { clipOpen = false }
+    }
+
     // Спільна "пілюля" для лівого/правого островів — окрема капсула на
     // групу, як у референсі (github.com/patheonsceo/Dynamic-island-for-arch),
     // а не один суцільний бар.
