@@ -44,14 +44,11 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 
 ## Скріншоти
 
-> Заміни на реальні скріни нотч-бару, Dashboard і GameMode — просто поклади
-> файли в `docs/` (наприклад `docs/notch.png`, `docs/dashboard.png`) і онови
-> посилання нижче.
-
-```md
 ![notch](docs/notch.png)
+*Нотч-бар: воркспейси, годинник, мережа/звук/батарея, трей.*
+
 ![dashboard](docs/dashboard.png)
-```
+*Dashboard: меню програм, Wi-Fi/Bluetooth/DND, гучність, MPRIS, календар, профілі живлення.*
 
 ## Залежності
 
