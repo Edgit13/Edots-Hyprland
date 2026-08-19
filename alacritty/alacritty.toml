@@ -1,7 +1,14 @@
 [window]
-opacity = 0.85
+opacity = 0.65
 blur = true
 padding = { x = 12, y = 12 }
+
+[font]
+size = 11.0
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
 
 [colors]
 transparent_background_colors = true
@@ -36,6 +43,5 @@ text   = "#1d2021"
 cursor = "#e2d3ba"
 
 [colors.selection]
-text       = "#1d2021"
+text        = "#1d2021"
 background = "#e2d3ba"
-

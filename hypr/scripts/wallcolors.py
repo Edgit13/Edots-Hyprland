@@ -13,6 +13,7 @@ import json
 import subprocess
 import colorsys
 import logging
+import configparser
 
 HOME = os.path.expanduser("~")
 HYPR_COLORS_LUA = os.path.join(HOME, ".config/hypr/hypr-colors.lua")
@@ -25,6 +26,8 @@ GTK4_COLORS_CSS = os.path.join(HOME, ".config/gtk-4.0/gtk-colors.css")
 GTK3_COLORS_CSS = os.path.join(HOME, ".config/gtk-3.0/gtk-colors.css")
 FISH_COLORS_FISH = os.path.join(HOME, ".config/fish/fish-colors.fish")
 FIREFOX_COLORS_CSS = os.path.join(HOME, ".config/firefox-colors.css")
+DOLPHIN_COLOR_SCHEME = os.path.join(HOME, ".local/share/color-schemes/scheme.colors")
+KDEGLOBALS = os.path.join(HOME, ".config/kdeglobals")
 LOG_FILE = os.path.join(HOME, "wallcolours.log")
 
 # Налаштування логування: запис у файл wallcolours.log та вивід у термінал
@@ -368,6 +371,240 @@ def write_firefox_colors(p: dict):
         logging.error(f"Не вдалося записати файл кольорів Firefox: {e}")
 
 
+def write_dolphin_colors(p: dict):
+    """
+    Dolphin — це Qt/KDE Frameworks застосунок, він НЕ читає GTK
+    @define-color файли. Йому потрібна справжня KDE color scheme
+    (.colors, INI-формат з RGB через кому, не hex).
+
+    Пишемо у два місця:
+    1. ~/.local/share/color-schemes/Ricelin.colors — щоб схема була
+       видна в System Settings / plasma-apply-colorscheme, якщо колись
+       знадобиться вибрати вручну.
+    2. ~/.config/kdeglobals — файл, який Qt/KF6-застосунки (Dolphin,
+       Kate, будь-що на Qt) РЕАЛЬНО читають наживо для активної палітри.
+       Мерджимо через configparser, а не перезаписуємо повністю —
+       у kdeglobals купа іншого (шрифти, локаль, недавні файли), яке
+       чіпати не треба.
+
+    Застереження: якщо Dolphin запущено не під Plasma (як тут, під
+    Hyprland), йому може знадобитись QT_QPA_PLATFORMTHEME=kde (або
+    Kvantum з відповідним профілем) і стиль Breeze, інакше він може
+    ігнорувати kdeglobals і малюватись системним Qt-дефолтом. Це вже
+    поза межами того, що можна поправити з Python-скрипта.
+    """
+    logging.info(f"Запис кольорів Dolphin/KDE у: {DOLPHIN_COLOR_SCHEME} та {KDEGLOBALS}")
+
+    def rgb(hex_str: str) -> str:
+        hex_str = hex_str.lstrip("#")
+        r = int(hex_str[0:2], 16)
+        g = int(hex_str[2:4], 16)
+        b = int(hex_str[4:6], 16)
+        return f"{r},{g},{b}"
+
+    sections = {
+        "ColorEffects:Disabled": {
+            "Color": p["bg1"],
+            "ColorAmount": "0.5",
+            "ColorEffect": "3",
+            "ContrastAmount": "0",
+            "ContrastEffect": "0",
+            "IntensityAmount": "0",
+            "IntensityEffect": "0",
+        },
+        "ColorEffects:Inactive": {
+            "ChangeSelectionColor": "true",
+            "Color": p["bg0"],
+            "ColorAmount": "0.025",
+            "ColorEffect": "0",
+            "ContrastAmount": "0.1",
+            "ContrastEffect": "0",
+            "Enable": "true",
+            "IntensityAmount": "0",
+            "IntensityEffect": "0",
+        },
+        "Colors:View": {
+            "BackgroundNormal": rgb(p["bg1"]),
+            "BackgroundAlternate": rgb(p["bg2"]),
+            "DecorationFocus": rgb(p["accent"]),
+            "DecorationHover": rgb(p["accent"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundLink": rgb(p["blue"]),
+            "ForegroundNegative": rgb(p["red"]),
+            "ForegroundNeutral": rgb(p["yellow"]),
+            "ForegroundNormal": rgb(p["fg"]),
+            "ForegroundPositive": rgb(p["green"]),
+            "ForegroundVisited": rgb(p["purple"]),
+        },
+        "Colors:Window": {
+            "BackgroundNormal": rgb(p["bg0"]),
+            "BackgroundAlternate": rgb(p["bg1"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundLink": rgb(p["blue"]),
+            "ForegroundNegative": rgb(p["red"]),
+            "ForegroundNeutral": rgb(p["yellow"]),
+            "ForegroundNormal": rgb(p["fg"]),
+            "ForegroundPositive": rgb(p["green"]),
+            "ForegroundVisited": rgb(p["purple"]),
+        },
+        "Colors:Button": {
+            "BackgroundNormal": rgb(p["bg2"]),
+            "BackgroundAlternate": rgb(p["bg3"]),
+            "DecorationFocus": rgb(p["accent"]),
+            "DecorationHover": rgb(p["accent"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundLink": rgb(p["blue"]),
+            "ForegroundNegative": rgb(p["red"]),
+            "ForegroundNeutral": rgb(p["yellow"]),
+            "ForegroundNormal": rgb(p["fg"]),
+            "ForegroundPositive": rgb(p["green"]),
+            "ForegroundVisited": rgb(p["purple"]),
+        },
+        "Colors:Selection": {
+            "BackgroundNormal": rgb(p["accent"]),
+            "BackgroundAlternate": rgb(p["accent"]),
+            "DecorationFocus": rgb(p["accent"]),
+            "DecorationHover": rgb(p["accent"]),
+            "ForegroundActive": rgb(p["bg0"]),
+            "ForegroundInactive": rgb(p["bg0"]),
+            "ForegroundLink": rgb(p["bg0"]),
+            "ForegroundNegative": rgb(p["red"]),
+            "ForegroundNeutral": rgb(p["yellow"]),
+            "ForegroundNormal": rgb(p["bg0"]),
+            "ForegroundPositive": rgb(p["green"]),
+            "ForegroundVisited": rgb(p["purple"]),
+        },
+        "Colors:Tooltip": {
+            "BackgroundNormal": rgb(p["bg2"]),
+            "BackgroundAlternate": rgb(p["bg3"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundNormal": rgb(p["fg"]),
+        },
+        "Colors:Header": {
+            "BackgroundNormal": rgb(p["bg1"]),
+            "BackgroundAlternate": rgb(p["bg2"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundNormal": rgb(p["fg"]),
+        },
+        "Colors:Header][Inactive": {
+            "BackgroundNormal": rgb(p["bg1"]),
+            "BackgroundAlternate": rgb(p["bg2"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundNormal": rgb(p["fg"]),
+        },
+        "Colors:Complementary": {
+            # "Places" sidebar-подібні панелі в новіших Breeze-схемах
+            "BackgroundNormal": rgb(p["bg0"]),
+            "BackgroundAlternate": rgb(p["bg1"]),
+            "ForegroundActive": rgb(p["accent"]),
+            "ForegroundInactive": rgb(p["grey1"]),
+            "ForegroundNormal": rgb(p["fg"]),
+        },
+        "WM": {
+            "activeBackground": rgb(p["bg2"]),
+            "activeForeground": rgb(p["fg"]),
+            "activeBlend": rgb(p["accent"]),
+            "inactiveBackground": rgb(p["bg1"]),
+            "inactiveForeground": rgb(p["grey1"]),
+            "inactiveBlend": rgb(p["bg1"]),
+        },
+        "General": {
+            "ColorScheme": "Ricelin",
+            "Name": "Ricelin",
+            "shadeSortColumn": "true",
+        },
+        "Icons": {
+            "Theme": "breeze-dark",
+        },
+        "KDE": {
+            "contrast": "4",
+            # end-4's реальний kdeglobals використовує widgetStyle=Darkly —
+            # темніший/сучасніший за Breeze, але це окремий пакет, який у
+            # тебе не підтверджено встановленим. Ставлю безпечний Breeze
+            # (вже перевірено, що працює). Якщо захочеш Darkly — постав
+            # пакет і зміни це значення вручну, або скажи, і автоматизую.
+            "widgetStyle": "Breeze",
+        },
+    }
+
+    try:
+        # ---- 1. Окремий .colors файл (повний перезапис — це виключно наш файл) ----
+        cp_file = configparser.ConfigParser()
+        cp_file.optionxform = str  # KDE ключі мають значущий регістр (BackgroundNormal != backgroundnormal)
+        cp_file["ColorScheme"] = {"Name": "Ricelin"}
+        for section, values in sections.items():
+            cp_file[section] = values
+
+        os.makedirs(os.path.dirname(DOLPHIN_COLOR_SCHEME), exist_ok=True)
+        with open(DOLPHIN_COLOR_SCHEME, "w") as f:
+            cp_file.write(f, space_around_delimiters=False)
+
+        # ---- 2. Мердж у kdeglobals — файл, який Dolphin реально читає наживо ----
+        cp_globals = configparser.ConfigParser()
+        cp_globals.optionxform = str
+        if os.path.isfile(KDEGLOBALS):
+            cp_globals.read(KDEGLOBALS)
+
+        for section, values in sections.items():
+            if section == "General":
+                continue  # [General] обробляємо окремо нижче — там купа іншого
+            if not cp_globals.has_section(section):
+                cp_globals.add_section(section)
+            for key, value in values.items():
+                cp_globals.set(section, key, value)
+
+        # [General] — тільки точкові ключі (шрифт + активна схема), решту не чіпаємо.
+        # Формат шрифту — реальний 18-польовий синтаксис KDE (Family,size,-1,5,
+        # weight,0,0,0,0,0,0,0,0,0,0,1,StyleName), підтверджений з реального
+        # kdeglobals у end-4/dots-hyprland — мій попередній 10-польовий варіант
+        # був неповним.
+        if not cp_globals.has_section("General"):
+            cp_globals.add_section("General")
+        cp_globals.set("General", "ColorScheme", "Ricelin")
+        font_str = "JetBrainsMono Nerd Font Propo,10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium"
+        fixed_font_str = "JetBrainsMono Nerd Font Propo,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        cp_globals.set("General", "font", font_str)
+        cp_globals.set("General", "fixed", fixed_font_str)
+        cp_globals.set("General", "menuFont", font_str)
+        cp_globals.set("General", "toolBarFont", font_str)
+        cp_globals.set("General", "smallestReadableFont", font_str)
+
+        os.makedirs(os.path.dirname(KDEGLOBALS), exist_ok=True)
+        with open(KDEGLOBALS, "w") as f:
+            cp_globals.write(f, space_around_delimiters=False)
+
+        logging.info("Кольори Dolphin/KDE успішно збережено.")
+    except Exception as e:
+        logging.error(f"Не вдалося записати файли кольорів Dolphin/KDE: {e}")
+
+
+def apply_dolphin_colors():
+    """
+    plasma-apply-colorscheme розсилає dbus-сигнал, щоб застосунки, які вже
+    відкриті, перечитали палітру наживо. Без повної Plasma-сесії (як тут,
+    під Hyprland) цього інструменту може не бути — тоді Dolphin підхопить
+    нові кольори просто при наступному запуску, без live-релоаду.
+    """
+    logging.info("Спроба застосувати колірну схему Dolphin наживо...")
+    try:
+        result = subprocess.run(
+            ["plasma-apply-colorscheme", "Ricelin"],
+            capture_output=True, check=False, timeout=5
+        )
+        if result.returncode == 0:
+            logging.info("Схему Ricelin застосовано наживо через plasma-apply-colorscheme.")
+        else:
+            logging.warning("plasma-apply-colorscheme недоступний або повернув помилку — kdeglobals оновлено, але треба перезапустити Dolphin.")
+    except (subprocess.SubprocessError, FileNotFoundError):
+        logging.warning("plasma-apply-colorscheme не знайдено (нормально без повної Plasma-сесії) — kdeglobals оновлено, Dolphin підхопить при наступному запуску.")
+
+
 def push_to_kitty():
     logging.info("Надсилання команди оновлення кольорів для запущених інстансів Kitty...")
     try:
@@ -416,9 +653,11 @@ def main():
     write_gtk_colors(palette)
     write_fish_colors(palette)
     write_firefox_colors(palette)
+    write_dolphin_colors(palette)
 
     push_to_kitty()
     reload_swaync()
+    apply_dolphin_colors()
 
     logging.info("=== Генерацію кольорів успішно завершено ===")
 

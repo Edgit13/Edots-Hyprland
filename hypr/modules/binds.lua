@@ -3,15 +3,16 @@
 ---------------------
 
 -- Set programs that you use
-local terminal = "alacritty"
-local fileManager = "nautilus"
+local terminal = "kitty"
+local fileManager = "dolphin"
 local menu = "rofi -show drun"
 local screen = "~/.local/bin/rishot"
 local screen_rec = "hyprscreen"
-local browser = "vivaldi"
+local browser = "firefox"
 local reboot = "reboot"
 local cliphistory = "cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 local lock = "hyprlock -c ~/.config/hypr/hyprlock/hyprlock.conf"
+local sleep = "systemctl suspend"
 
 ---------------------
 ---- KEYBINDINGS ----
@@ -24,6 +25,7 @@ hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + U ", hl.dsp.exec_cmd(screen))
+hl.bind(mainMod .. " + F3 ", hl.dsp.exec_cmd(sleep))
 hl.bind(mainMod .. " + END ", hl.dsp.exec_cmd(reboot))
 hl.bind(mainMod .. " + L ", hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + SHIFT + V ", hl.dsp.exec_cmd(cliphistory))

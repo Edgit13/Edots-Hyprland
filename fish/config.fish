@@ -53,3 +53,10 @@ alias ls='ls -la --group-directories-first --color=auto'
 if type -q fastfetch
     fastfetch
 end
+
+# pnpm
+set -gx PNPM_HOME "/home/eduard/.local/share/pnpm"
+if not string match -q -- "$PNPM_HOME/bin" $PATH
+  set -gx PATH "$PNPM_HOME/bin" $PATH
+end
+# pnpm end
