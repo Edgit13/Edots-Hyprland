@@ -2,7 +2,9 @@ import Quickshell
 import QtQuick
 
 Text {
-    text: Qt.formatDateTime(clock.date, "hh:mm")
+    id: root
+
+    text: Qt.formatDateTime(new Date(), "hh:mm")
     color: Colors.accent
     font {
         family: "SF Mono"
@@ -11,8 +13,20 @@ Text {
         weight: 600
     }
 
-    SystemClock {
-        id: clock
-        precision: SystemClock.Minutes
+    // Звичайний polling-таймер замість SystemClock: він не завʼязаний на
+    // прорахований наперед дедлайн і тому не "зависає" після сну/блокування
+    // екрана. Навіть якщо тік пропущено під час suspend, наступний (макс.
+    // за 10с) сам підхопить правильний час — без накопичення розсинхрону.
+    Timer {
+        interval: 10000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: root.text = Qt.formatDateTime(new Date(), "hh:mm")
     }
+
+    // Додатковий страхувальний тригер: коли елемент знову стає видимим
+    // (панель піднялась з невидимого/призупиненого стану після сну чи
+    // розлоку), одразу форсуємо оновлення, не чекаючи наступного тіку.
+    onVisibleChanged: if (visible) text = Qt.formatDateTime(new Date(), "hh:mm")
 }
