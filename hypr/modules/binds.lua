@@ -41,7 +41,8 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 -- якщо floating-toggle досі потрібен, перевісь на інший бінд (нижче
 -- залишив коментар з варіантом).
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("qs -c bar ipc call clipboard toggle"))
--- hl.bind(mainMod .. " + ALT + V", hl.dsp.window.float({ action = "toggle" })) -- розкоментуй, якщо floating-toggle теж потрібен
+hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
+
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("~/.config/quickshell/scripts/gamemode.sh"))
 hl.bind(mainMod .. " + F2", hl.dsp.exec_cmd("qs -c bar ipc call dashboard toggle"))
 hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(menu))
