@@ -33,6 +33,14 @@ LINKS=(
   "swaync:$CONFIG_HOME/swaync"
   "dolphinrc:$CONFIG_HOME/dolphinrc"
   "kdeglobals:$CONFIG_HOME/kdeglobals"
+  "edots-hypr:$HOME/edots-hypr"
+)
+
+# інструменти, що лінкуються в /usr/local/bin (потребують sudo)
+# формат: "шлях_у_репо:ціль_symlink'у"
+BIN_LINKS=(
+  "edots-hypr/tool-manager/upkg:/usr/local/bin/upkg"
+  "edots-hypr/tool-manager/utimer:/usr/local/bin/utimer"
 )
 
 c_green="\033[0;32m"; c_yellow="\033[0;33m"; c_red="\033[0;31m"; c_reset="\033[0m"
@@ -77,7 +85,27 @@ cmd_install() {
   chmod +x "$REPO_DIR"/quickshell/bar/reload.sh 2>/dev/null || true
   chmod +x "$REPO_DIR"/quickshell/scripts/*.sh 2>/dev/null || true
   chmod +x "$REPO_DIR"/hypr/scripts/*.sh 2>/dev/null || true
+  chmod +x "$REPO_DIR"/edots-hypr/tool-manager/upkg "$REPO_DIR"/edots-hypr/tool-manager/utimer 2>/dev/null || true
   info "виставлено +x на скрипти"
+
+  echo
+  for pair in "${BIN_LINKS[@]}"; do
+    src="$REPO_DIR/${pair%%:*}"
+    dst="${pair##*:}"
+
+    if [ ! -e "$src" ]; then
+      warn "нема в репо, пропускаю: $src"
+      continue
+    fi
+
+    if [ -L "$dst" ] && [ "$(readlink -f "$dst")" = "$(readlink -f "$src")" ]; then
+      info "вже залінковано: $dst"
+      continue
+    fi
+
+    sudo ln -sf "$src" "$dst"
+    info "залінковано (sudo): $dst -> $src"
+  done
 
   if command -v python3 >/dev/null; then
     python3 "$REPO_DIR/hypr/scripts/wallcolors.py" || warn "wallcolors.py впав, запусти вручну"
@@ -89,6 +117,22 @@ cmd_install() {
 
 cmd_status() {
   for pair in "${LINKS[@]}"; do
+    src="$REPO_DIR/${pair%%:*}"
+    dst="${pair##*:}"
+
+    if [ -L "$dst" ] && [ "$(readlink -f "$dst")" = "$(readlink -f "$src")" ]; then
+      info "$dst -> $src"
+    elif [ -L "$dst" ]; then
+      warn "$dst symlink, але веде в інше місце ($(readlink -f "$dst"))"
+    elif [ -e "$dst" ]; then
+      err "$dst існує, але НЕ symlink (звичайна копія)"
+    else
+      warn "$dst не існує"
+    fi
+  done
+
+  echo
+  for pair in "${BIN_LINKS[@]}"; do
     src="$REPO_DIR/${pair%%:*}"
     dst="${pair##*:}"
 
@@ -114,6 +158,17 @@ cmd_unlink() {
       info "видалено symlink: $dst"
     fi
   done
+
+  for pair in "${BIN_LINKS[@]}"; do
+    src="$REPO_DIR/${pair%%:*}"
+    dst="${pair##*:}"
+
+    if [ -L "$dst" ] && [ "$(readlink -f "$dst")" = "$(readlink -f "$src")" ]; then
+      sudo rm "$dst"
+      info "видалено symlink (sudo): $dst"
+    fi
+  done
+
   echo "Бекапи (~/.config-backup-*) поверни вручну за потреби."
 }
 
