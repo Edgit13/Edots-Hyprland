@@ -27,27 +27,6 @@ ShellRoot {
     property bool powerOpen: false
     property bool trayOpen: false
 
-    // Годинник у нотчі: `Qt.formatDateTime(new Date(), ...)` сам по собі
-    // НЕ реактивний (new Date() не має QML-залежностей), тому раніше текст
-    // рахувався один раз при створенні панелі і більше ніколи не оновлювався
-    // сам — тільки коли Hyprland пересоздавав панель (напр. після сну, коли
-    // Quickshell.screens перерахувався). Тепер значення тримає властивість,
-    // яку явно оновлює Timer — тікає завжди, незалежно від сну/блокування.
-    property string clockText: Qt.formatDateTime(new Date(), "hh:mm  |  dd MMM")
-
-    Timer {
-        interval: 10000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: root.clockText = Qt.formatDateTime(new Date(), "hh:mm  |  dd MMM")
-    }
-
-    IpcHandler {
-        target: "clock"
-        function refresh(): void { root.clockText = Qt.formatDateTime(new Date(), "hh:mm  |  dd MMM") }
-    }
-
     IpcHandler {
         target: "dashboard"
         function toggle(): void { dashboardOpen = !dashboardOpen }
@@ -202,11 +181,21 @@ ShellRoot {
                         }
 
                         Text {
+                            id: clockText
                             Layout.fillWidth: true
-                            text: root.clockText
+                            text: Qt.formatDateTime(clockText.currentTime, "hh:mm  |  dd MMM")
                             color: Colors.fg
                             font { family: "SF Pro Display"; pixelSize: 12; weight: 600 }
                             horizontalAlignment: Text.AlignHCenter
+
+                            property date currentTime: new Date()
+
+                            Timer {
+                                interval: 1000
+                                running: true
+                                repeat: true
+                                onTriggered: clockText.currentTime = new Date()
+                            }
                         }
 
                         Text {
