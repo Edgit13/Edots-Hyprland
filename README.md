@@ -38,7 +38,8 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | `quickshell/bar/Dash/` | Dashboard: Wi-Fi / Bluetooth / DND тогли, MPRIS-плеєр, календар, профілі живлення (`powerprofilesctl`) |
 | `quickshell/scripts/` | `gamemode.sh` — вимикає анімації/blur/DND під час ігор; `modernmode.sh` — тогл HyprGlass через `hyprpm` |
 | `hypr/` | Модульний Hyprland-конфіг на Lua (`hyprland.lua` + `modules/*.lua`), `hyprlock/`, `hypridle.conf` |
-| `hypr/scripts/wallcolors.py` | Витягує палітру з поточної шпалери й генерує кольори для Hyprland, GTK, Quickshell, Kitty, Fish, Firefox |
+| `hypr/scripts/wallcolors.py` | Витягує палітру з поточної шпалери через `matugen` і генерує кольори для Hyprland, GTK, Quickshell, Kitty, Fish, Firefox |
+| `edots-hypr/` | Окрема "еко-система" утиліт: `tool-manager/` (`upkg` — обгортка над yay+flatpak, `utimer` — фоновий таймер), `tui-player/` (TUI-плеєр на Textual+VLC), `bin/edot-i18.py` (читає `settings.edot`), скрипти автозапуску/бекапу |
 | `gtk-3.0/`, `gtk-4.0/` | Тема GTK, синхронізована з тією ж палітрою |
 | `nvim/`, `fish/`, `kitty/`, `alacritty/`, `rofi/`, `swaync/`, `fastfetch/` | Конфіги супутніх застосунків |
 
@@ -52,14 +53,80 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 
 ## Залежності
 
-- [Hyprland](https://hyprland.org/) (тестовано на `0.56.x`)
-- [Quickshell](https://quickshell.org/)
-- `hyprpm` — для HyprGlass (опційно)
-- `swaync` — сповіщення
-- Python 3 — для `wallcolors.py`
-- Material Symbols Rounded — іконки в барі (AUR: `ttf-material-symbols-variable-git`, або статичний `.ttf`/`.woff2` з [fonts.google.com/icons](https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded))
-- SF Pro Display — шрифт тексту/годинника в барі
-- `powerprofilesctl`, `nmcli`, `bluetoothctl` — тогли в Dashboard
+### Ядро
+
+| Програма | Навіщо |
+|---|---|
+| [Hyprland](https://hyprland.org/) `0.56.x`+ | Wayland-композитор, Lua-конфіг (`hl.*` API) |
+| [Quickshell](https://quickshell.org/) | движок нотч-бару (QML), CLI-команда `qs` |
+| `hyprpm` | менеджер плагінів Hyprland — потрібен для HyprGlass |
+| `hyprlock` | екран блокування |
+| `hypridle` | демон бездіяльності (автолок/сон) |
+| [HyprGlass](https://github.com/hyprnux/hyprglass) | плагін "liquid-glass" — опційно, тогл `Super+F2`→Dashboard→Modern або `modernmode.sh` |
+
+### Шрифти
+
+| Шрифт | Де використовується |
+|---|---|
+| Material Symbols Rounded (`extra/ttf-material-symbols-variable`) | іконки у Quickshell-барі |
+| JetBrainsMono Nerd Font | Alacritty, іконки в `hyprlock-music.sh` |
+| SF Pro Display | текст/годинник у барі |
+| Fira Code | Rofi |
+
+### CLI-інструменти, які напряму викликає бар (Quickshell `Process{}`)
+
+| Програма | Навіщо |
+|---|---|
+| `NetworkManager` (`nmcli`) | Wi-Fi тогл і статус у `Network.qml` / Dashboard |
+| `bluez` (`bluetoothctl`) | Bluetooth тогл у Dashboard |
+| `power-profiles-daemon` (`powerprofilesctl`) | профілі живлення у Dashboard |
+| `swaync` + `swaync-client` | сповіщення, DND, лічильник |
+| `cliphist` + `wl-clipboard` (`wl-copy`) | історія буфера обміну |
+| `brightnessctl` | яскравість екрана (слайдер у Dashboard) |
+| `awww` | демон шпалер (`awww img -t wave ...`, форк-заміна `swww` у офіційних репах Arch) |
+| `iproute2` (`ip`), `iputils` (`ping`) | RX/TX-трафік і пінг у `Network.qml` |
+| `alacritty` | термінал (запускається кнопками бару, окремо від дефолтного `kitty` з `binds.lua`) |
+| `nautilus` | файловий менеджер (кнопка в меню бару — окремо від дефолтного `dolphin` у `binds.lua`) |
+| `zen-browser` | браузер (кнопка в меню бару — окремо від дефолтного `firefox` у `binds.lua`) |
+| `systemctl` | reboot/poweroff/suspend |
+
+### Допоміжні скрипти
+
+| Скрипт | Залежності |
+|---|---|
+| `quickshell/scripts/gamemode.sh` | `hyprctl`, `swaync-client`, `notify-send` (libnotify); опційно `cpupower`, `pkexec` (polkit), `gamemoded` (Feral GameMode) |
+| `quickshell/scripts/modernmode.sh` | `hyprpm`, `notify-send` |
+| `hypr/scripts/wallcolors.py` | `python3`, [`matugen`](https://github.com/InioX/matugen) (генерація Material You палітри), `swaync-client`, `kitty` (remote control), опційно `plasma-apply-colorscheme` (live-тема Dolphin у KDE-сесії) |
+| `hypr/scripts/hyprlock-music.sh` | `playerctl`, `bc` |
+| `hypr/scripts/hyprlock-weather.sh` | `curl` (запит до `wttr.in`) |
+
+### `edots-hypr/` еко-система
+
+| Компонент | Залежності |
+|---|---|
+| `asettings.sh` | `figlet` |
+| `autostart.sh` | `python3` (запускає `tui-player`) |
+| `update.sh` | опційно `inotify-tools` (`inotifywait`), інакше polling через `stat`; `nautilus` для live-reload теми |
+| `tool-manager/upkg` | `yay` (AUR), `flatpak` |
+| `tool-manager/utimer` | `mpv` **або** `pw-play` (PipeWire) **або** `paplay` (PulseAudio, будь-що одне), `notify-send` |
+| `tui-player/` | `python3`, `venv`, `pip`; піп-пакети `textual`, `python-vlc` (потребує системний `vlc`/`libvlc`), `mutagen` |
+| `bin/edot-i18.py` | тільки stdlib Python, без зовнішніх залежностей |
+
+> ⚠️ `backup.sh` викликає `./bup.sh`, якого немає в репозиторії — або файл загубився, або скрипт ще не доданий.
+
+### Термінали, шел, інше
+
+| Програма | Навіщо |
+|---|---|
+| `fish` | основний шел, `config.fish` |
+| `jq` | читає `hypr/colors.json` у змінні `fish` |
+| `fastfetch` | system-info (alias `ff`) |
+| `nvim` (LazyVim) | редактор (alias `e`); LazyVim стандартно тягне `git`, `ripgrep`, `fd` |
+| `kitty`, `alacritty` | термінали |
+| `rofi` | лаунчер/меню (`Super+Space`) |
+| `dolphin` | файловий менеджер (`Super+E`) |
+| `firefox` | браузер (`Super+B`), + `firefox/chrome/` userChrome |
+| `tree`, `pnpm` | згадуються в `fish/config.fish` (alias/PATH) |
 
 ## Встановлення
 
@@ -97,9 +164,13 @@ qs -p ~/.config/quickshell/bar
 ```
 
 Що лінкується: `alacritty`, `fastfetch`, `fish`, `gtk-3.0`, `gtk-4.0`, `hypr`,
-`kitty`, `nvim`, `quickshell`, `rofi`, `swaync`, а також файли `dolphinrc` і
-`kdeglobals`. Список тек/цілей редагується прямо в масиві `LINKS` на початку
-скрипта.
+`kitty`, `nvim`, `quickshell`, `rofi`, `swaync`, `edots-hypr` (→ `~/edots-hypr`),
+а також файли `dolphinrc` і `kdeglobals`. Список тек/цілей редагується прямо
+в масиві `LINKS` на початку скрипта.
+
+Окремо `sync.sh install` лінкує `upkg` і `utimer` (з `edots-hypr/tool-manager/`)
+у `/usr/local/bin/` — це системна тека, тому ці два лінки створюються через
+`sudo` (спитає пароль один раз). Редагується в масиві `BIN_LINKS`.
 
 > `firefox/chrome/` лінкується окремо, бо шлях до профілю унікальний:
 > ```bash
@@ -129,6 +200,7 @@ Edots-Hyprland/
 ├── hypr/                # Hyprland (Lua) + hyprlock/hypridle + wallcolors.py
 ├── quickshell/bar/       # нотч-бар (QML)
 ├── quickshell/scripts/   # gamemode.sh, modernmode.sh
+├── edots-hypr/           # tool-manager (upkg, utimer), tui-player, скрипти автозапуску/бекапу
 ├── gtk-3.0/ gtk-4.0/     # GTK-тема
 ├── kitty/ alacritty/     # термінали
 ├── fish/                # шел
