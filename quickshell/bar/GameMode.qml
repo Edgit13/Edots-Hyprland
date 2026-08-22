@@ -43,11 +43,11 @@ MouseArea {
         spacing: 6
 
         Text {
-            text: String.fromCodePoint(0xF02F1) // nf-md-controller
+            text: String.fromCodePoint(0xea28) // sports_esports
             color: GameModeState.active ? Colors.accent : Colors.grey1
 
             font {
-                family: "JetBrainsMono Nerd Font Propo"
+                family: "Material Symbols Rounded"
                 pixelSize: 13
             }
         }

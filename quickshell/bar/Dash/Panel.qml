@@ -168,7 +168,7 @@ PanelWindow {
                     anchors.centerIn: parent
                     text: chip.icon
                     color: chip.active ? Colors.bg0 : Colors.fg
-                    font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                    font { family: "Material Symbols Rounded"; pixelSize: 13 }
                 }
             }
 
@@ -217,7 +217,7 @@ PanelWindow {
             Text {
                 text: prow.icon
                 color: prow.active ? Colors.accent : Colors.grey1
-                font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                font { family: "Material Symbols Rounded"; pixelSize: 13 }
             }
 
             Text {
@@ -275,12 +275,12 @@ PanelWindow {
                                 text: {
                                     if (!UPower.displayDevice) return ""
                                     let p = Math.round(UPower.displayDevice.percentage * 100)
-                                    if (p > 80) return String.fromCodePoint(0xF0079)
-                                    if (p > 40) return String.fromCodePoint(0xF007C)
-                                    return String.fromCodePoint(0xF007B)
+                                    if (p > 80) return String.fromCodePoint(0xe1a5) // battery_full
+                                    if (p > 40) return String.fromCodePoint(0xf09e) // battery_3_bar
+                                    return String.fromCodePoint(0xe19c) // battery_alert
                                 }
                                 color: Colors.accent
-                                font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                                font { family: "Material Symbols Rounded"; pixelSize: 13 }
                             }
 
                             Text {
@@ -334,7 +334,7 @@ PanelWindow {
 
                                 ToggleChip {
                                     label: "Меню програм"
-                                    icon: String.fromCodePoint(0xF00A)
+                                    icon: String.fromCodePoint(0xe5c3) // apps
                                     active: false
                                     onClicked: {
                                         menuIpcProc.running = true
@@ -343,19 +343,19 @@ PanelWindow {
                                 }
                                 ToggleChip {
                                     label: "Wi-Fi"
-                                    icon: String.fromCodePoint(0xF05A9)
+                                    icon: String.fromCodePoint(0xe63e) // wifi
                                     active: panel.wifiOn
                                     onClicked: panel.toggleWifi()
                                 }
                                 ToggleChip {
                                     label: "Bluetooth"
-                                    icon: String.fromCodePoint(0xF00AF)
+                                    icon: String.fromCodePoint(0xe1a7) // bluetooth
                                     active: panel.btOn
                                     onClicked: panel.toggleBt()
                                 }
                                 ToggleChip {
                                     label: "DND"
-                                    icon: String.fromCodePoint(0xF02DC)
+                                    icon: String.fromCodePoint(0xf08f) // do_not_disturb_on
                                     active: panel.dndOn
                                     onClicked: panel.toggleDnd()
                                 }
@@ -382,9 +382,9 @@ PanelWindow {
                                         readonly property int vol: ready ? Math.round(sink.audio.volume * 100) : 0
 
                                         Text {
-                                            text: String.fromCodePoint(0xF057E)
+                                            text: String.fromCodePoint(0xe050) // volume_up
                                             color: Colors.accent
-                                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                                            font { family: "Material Symbols Rounded"; pixelSize: 13 }
                                         }
 
                                         Rectangle {
@@ -422,9 +422,9 @@ PanelWindow {
                                         spacing: 8
 
                                         Text {
-                                            text: String.fromCodePoint(0xF00DC)
+                                            text: String.fromCodePoint(0xe3ab) // brightness_6
                                             color: Colors.yellow
-                                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                                            font { family: "Material Symbols Rounded"; pixelSize: 13 }
                                         }
 
                                         Rectangle {
@@ -479,9 +479,9 @@ PanelWindow {
                                         spacing: 8
 
                                         Text {
-                                            text: String.fromCodePoint(0xF075A)
+                                            text: String.fromCodePoint(0xe405) // music_note
                                             color: Colors.accent
-                                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 14 }
+                                            font { family: "Material Symbols Rounded"; pixelSize: 14 }
                                         }
 
                                         Text {
@@ -521,9 +521,9 @@ PanelWindow {
                                         spacing: 28
 
                                         Text {
-                                            text: String.fromCodePoint(0xF04AE)
+                                            text: String.fromCodePoint(0xe045) // skip_previous
                                             color: (mediaBox.player && mediaBox.player.canGoPrevious) ? Colors.fg : Colors.grey1
-                                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 18 }
+                                            font { family: "Material Symbols Rounded"; pixelSize: 18 }
                                             MouseArea {
                                                 anchors.fill: parent
                                                 anchors.margins: -8
@@ -535,9 +535,9 @@ PanelWindow {
 
                                         Text {
                                             text: (mediaBox.player && mediaBox.player.isPlaying)
-                                                  ? String.fromCodePoint(0xF03E4) : String.fromCodePoint(0xF040A)
+                                                  ? String.fromCodePoint(0xe034) : String.fromCodePoint(0xe037) // pause / play_arrow
                                             color: Colors.accent
-                                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 22 }
+                                            font { family: "Material Symbols Rounded"; pixelSize: 22 }
                                             MouseArea {
                                                 anchors.fill: parent
                                                 anchors.margins: -8
@@ -548,9 +548,9 @@ PanelWindow {
                                         }
 
                                         Text {
-                                            text: String.fromCodePoint(0xF04AD)
+                                            text: String.fromCodePoint(0xe044) // skip_next
                                             color: (mediaBox.player && mediaBox.player.canGoNext) ? Colors.fg : Colors.grey1
-                                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 18 }
+                                            font { family: "Material Symbols Rounded"; pixelSize: 18 }
                                             MouseArea {
                                                 anchors.fill: parent
                                                 anchors.margins: -8
@@ -680,19 +680,19 @@ PanelWindow {
                                         PowerRow {
                                             label: "Максимум"
                                             profileName: "performance"
-                                            icon: String.fromCodePoint(0xF0E7)
+                                            icon: String.fromCodePoint(0xea0b) // bolt
                                             onClicked: panel.setPowerProfile("performance")
                                         }
                                         PowerRow {
                                             label: "Баланс"
                                             profileName: "balanced"
-                                            icon: String.fromCodePoint(0xF021)
+                                            icon: String.fromCodePoint(0xeaf6) // balance
                                             onClicked: panel.setPowerProfile("balanced")
                                         }
                                         PowerRow {
                                             label: "Економія"
                                             profileName: "power-saver"
-                                            icon: String.fromCodePoint(0xF00A4)
+                                            icon: String.fromCodePoint(0xea35) // eco
                                             onClicked: panel.setPowerProfile("power-saver")
                                         }
                                     }

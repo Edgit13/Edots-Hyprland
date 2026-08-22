@@ -27,11 +27,11 @@ Rectangle {
     Text {
         id: icon
         anchors.centerIn: parent
-        text: "\uf011"
+        text: "\uf8c7" // power_settings_new
         color: powerButton.open ? Colors.red : Colors.fg
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 14
         }
 

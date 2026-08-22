@@ -23,8 +23,8 @@ if type -q starship
 end
 
 # --- 3. Package Management Aliases ---
-alias i='sudo pacman -S'
-alias iy='yay -S'
+alias i='upkg install'
+alias ps='upkg search'
 
 # --- 4. Navigation & Directory Aliases ---
 alias ..='cd ..'
@@ -57,6 +57,6 @@ end
 # pnpm
 set -gx PNPM_HOME "/home/eduard/.local/share/pnpm"
 if not string match -q -- "$PNPM_HOME/bin" $PATH
-  set -gx PATH "$PNPM_HOME/bin" $PATH
+    set -gx PATH "$PNPM_HOME/bin" $PATH
 end
 # pnpm end

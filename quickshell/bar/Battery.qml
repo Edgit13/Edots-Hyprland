@@ -12,11 +12,13 @@ RowLayout {
     readonly property int level: Math.round(battery.percentage * 100)
 
     readonly property string icon: {
-        if (charging) return String.fromCodePoint(0xF0084)
-        if (level >= 100) return String.fromCodePoint(0xF0079)
-        if (level < 10) return String.fromCodePoint(0xF0083)
+        if (charging) return String.fromCodePoint(0xe1a3) // battery_charging_full
+        if (level >= 100) return String.fromCodePoint(0xe1a5) // battery_full
+        if (level < 10) return String.fromCodePoint(0xe19c) // battery_alert
 
-        return String.fromCodePoint(0xF007A + (Math.floor(level / 10) - 1))
+        // battery_1_bar .. battery_6_bar
+        const bar = Math.min(6, Math.max(1, Math.ceil(level / 100 * 6)))
+        return String.fromCodePoint(0xf09c + (bar - 1))
     }
 
     Text {
@@ -27,7 +29,7 @@ RowLayout {
                               : Colors.green
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 13
         }
     }

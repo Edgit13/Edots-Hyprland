@@ -135,15 +135,16 @@ Item {
             readonly property real signal: activeNetwork ? (activeNetwork.signalStrength || 0.8) : 0
 
             readonly property string icon: {
-                if (!Networking.wifiEnabled) return String.fromCodePoint(0xF05AA)
-                if (!activeNetwork && !Networking.connected) return String.fromCodePoint(0xF092D)
+                if (!Networking.wifiEnabled) return String.fromCodePoint(0xe648) // wifi_off
+                if (!activeNetwork && !Networking.connected) return String.fromCodePoint(0xeb31) // wifi_find
 
                 let tier = signal >= 0.75 ? 4
                          : signal >= 0.50 ? 3
                          : signal >= 0.25 ? 2
                          : 1
 
-                return String.fromCodePoint(0xF091F + (tier - 1) * 3)
+                const tierCodepoints = [0xebe4, 0xebd6, 0xebe1, 0xe1ba] // network_wifi_1_bar..3_bar, network_wifi (full)
+                return String.fromCodePoint(tierCodepoints[tier - 1])
             }
 
             Text {
@@ -152,7 +153,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
 
                 font {
-                    family: "JetBrainsMono Nerd Font Propo"
+                    family: "Material Symbols Rounded"
                     pixelSize: 13
                 }
             }

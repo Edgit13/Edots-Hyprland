@@ -14,14 +14,11 @@ RowLayout {
     readonly property int vol: ready ? Math.round(sink.audio.volume * 100) : 0
 
     readonly property string icon: {
-        if (!ready) return String.fromCodePoint(0xF0581)
-        if (muted) return " "
+        if (!ready || muted) return String.fromCodePoint(0xe04f) // volume_off
+        if (vol === 0) return String.fromCodePoint(0xe04e) // volume_mute
+        if (vol < 50) return String.fromCodePoint(0xe04d) // volume_down
 
-        if (vol === 0) return String.fromCodePoint(0xF0581)
-        if (vol < 34) return String.fromCodePoint(0xF057F)
-        if (vol < 67) return String.fromCodePoint(0xF0580)
-
-        return String.fromCodePoint(0xF057E)
+        return String.fromCodePoint(0xe050) // volume_up
     }
 
     Text {
@@ -29,7 +26,7 @@ RowLayout {
         color: Colors.yellow
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 13
         }
     }

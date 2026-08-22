@@ -175,9 +175,9 @@ ShellRoot {
                         spacing: 8
 
                         Text {
-                            text: String.fromCodePoint(0xF0015)
+                            text: "\uefd6" // schedule
                             color: Colors.accent
-                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                            font { family: "Material Symbols Rounded"; pixelSize: 13 }
                         }
 
                         Text {
@@ -199,9 +199,9 @@ ShellRoot {
                         }
 
                         Text {
-                            text: String.fromCodePoint(0xF013)
+                            text: "\ue8b8" // settings
                             color: Colors.grey2
-                            font { family: "JetBrainsMono Nerd Font Propo"; pixelSize: 13 }
+                            font { family: "Material Symbols Rounded"; pixelSize: 13 }
                         }
                     }
                 }

@@ -74,10 +74,10 @@ Rectangle {
 
         Text {
             id: icon
-            text: swayncButton.dndActive ? "\uF0F3" : "\uF0A2" // Іконки дзвіночків з Nerd Font
+            text: swayncButton.dndActive ? "\uf08f" : "\ue7f5" // do_not_disturb_on / notifications
             color: swayncButton.notificationCount > 0 ? "#3dd1b0" : "#f5e2c5"
             font {
-                family: "JetBrainsMono Nerd Font Propo"
+                family: "Material Symbols Rounded"
                 pixelSize: 13
             }
         }

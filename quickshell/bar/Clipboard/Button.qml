@@ -27,11 +27,11 @@ Rectangle {
     Text {
         id: icon
         anchors.centerIn: parent
-        text: "\uF016"
+        text: "\ue14f" // content_paste
         color: clipButton.open ? Colors.accent : Colors.fg
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 14
         }
     }

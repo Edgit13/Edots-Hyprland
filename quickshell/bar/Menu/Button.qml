@@ -27,11 +27,11 @@ Rectangle {
     Text {
         id: icon
         anchors.centerIn: parent
-        text: "󰣇"
+        text: "\ue5c3" // apps (Material Symbols не має лого Arch Linux)
         color: menuButton.open ? Colors.accent : Colors.fg
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 14
         }
 

@@ -87,7 +87,7 @@ PanelWindow {
             // Швидкий запуск додатків
             MenuItem {
                 text: "Термінал"
-                icon: "\uf120"
+                icon: "\ueb8e" // terminal
                 onClicked: {
                     appLauncher.command = ["alacritty"]
                     appLauncher.running = true
@@ -97,7 +97,7 @@ PanelWindow {
 
             MenuItem {
                 text: "Браузер"
-                icon: "\uf0ac"
+                icon: "\ue681" // web
                 onClicked: {
                     appLauncher.command = ["zen-browser"]
                     appLauncher.running = true
@@ -107,7 +107,7 @@ PanelWindow {
 
             MenuItem {
                 text: "Файловий менеджер"
-                icon: "\uf07b"
+                icon: "\ue2c8" // folder_open
                 onClicked: {
                     appLauncher.command = ["nautilus"]
                     appLauncher.running = true
@@ -136,7 +136,7 @@ PanelWindow {
 
             MenuToggleItem {
                 text: "HyprGlass"
-                icon: "\uf5fc"
+                icon: "\ue3a5" // blur_on
                 active: ModernModeState.active
                 onClicked: {
                     modernToggler.command = [Quickshell.env("HOME") + "/.config/quickshell/scripts/modernmode.sh"]
@@ -166,7 +166,7 @@ PanelWindow {
 
             MenuItem {
                 text: "Блокування"
-                icon: "\uf023"
+                icon: "\ue899" // lock
                 onClicked: {
                     appLauncher.command = ["hyprlock"]
                     appLauncher.running = true
@@ -176,7 +176,7 @@ PanelWindow {
 
             MenuItem {
                 text: "Перезавантаження"
-                icon: "\uf021"
+                icon: "\uf053" // restart_alt
                 hoverColor: Qt.rgba(1, 0.7, 0.2, 0.2)
                 onClicked: {
                     appLauncher.command = ["systemctl", "reboot"]
@@ -187,7 +187,7 @@ PanelWindow {
 
             MenuItem {
                 text: "Вимкнути ПК"
-                icon: "\uf011"
+                icon: "\uf8c7" // power_settings_new
                 hoverColor: Qt.rgba(1, 0.3, 0.3, 0.2)
                 onClicked: {
                     appLauncher.command = ["systemctl", "poweroff"]
@@ -230,7 +230,7 @@ PanelWindow {
                 horizontalAlignment: Text.AlignHCenter
 
                 font {
-                    family: "JetBrainsMono Nerd Font Propo"
+                    family: "Material Symbols Rounded"
                     pixelSize: 14
                 }
             }
@@ -284,7 +284,7 @@ PanelWindow {
                 horizontalAlignment: Text.AlignHCenter
 
                 font {
-                    family: "JetBrainsMono Nerd Font Propo"
+                    family: "Material Symbols Rounded"
                     pixelSize: 14
                 }
             }

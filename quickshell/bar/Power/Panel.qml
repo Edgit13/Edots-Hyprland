@@ -85,13 +85,13 @@ PanelWindow {
 
             MenuItem {
                 text: "Заблокувати"
-                icon: "\uf023"
+                icon: "\ue899" // lock
                 onClicked: root.run(["hyprlock", "-c", Quickshell.env("HOME") + "/.config/hypr/hyprlock/hyprlock.conf"])
             }
 
             MenuItem {
                 text: "Заблокувати і призупинити"
-                icon: "\uf186"
+                icon: "\uf159" // bedtime
                 onClicked: root.run([
                     "bash", "-c",
                     "pidof hyprlock >/dev/null || hyprlock -c ~/.config/hypr/hyprlock/hyprlock.conf & " +
@@ -111,20 +111,20 @@ PanelWindow {
 
             MenuItem {
                 text: "Вийти з сеансу"
-                icon: "\uf2f5"
+                icon: "\ue9ba" // logout
                 onClicked: root.run(["hyprctl", "dispatch", "exit"])
             }
 
             MenuItem {
                 text: "Перезавантаження"
-                icon: "\uf021"
+                icon: "\uf053" // restart_alt
                 hoverColor: Qt.rgba(1, 0.7, 0.2, 0.2)
                 onClicked: root.run(["systemctl", "reboot"])
             }
 
             MenuItem {
                 text: "Вимкнути ПК"
-                icon: "\uf011"
+                icon: "\uf8c7" // power_settings_new
                 hoverColor: Qt.rgba(1, 0.3, 0.3, 0.2)
                 onClicked: root.run(["systemctl", "poweroff"])
             }
@@ -161,7 +161,7 @@ PanelWindow {
                 color: Colors.fg
                 Layout.preferredWidth: 18
                 horizontalAlignment: Text.AlignHCenter
-                font.family: "JetBrainsMono Nerd Font Propo"
+                font.family: "Material Symbols Rounded"
                 font.pixelSize: 14
             }
 

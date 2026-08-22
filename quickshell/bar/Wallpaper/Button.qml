@@ -27,11 +27,11 @@ Rectangle {
     Text {
         id: icon
         anchors.centerIn: parent
-        text: "\uF03E"
+        text: "\ue1bc" // wallpaper
         color: wallButton.open ? "#3dd1b0" : "#f5e2c5"
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 14
         }
     }

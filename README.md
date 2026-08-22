@@ -57,7 +57,8 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 - `hyprpm` — для HyprGlass (опційно)
 - `swaync` — сповіщення
 - Python 3 — для `wallcolors.py`
-- Nerd Font (`JetBrainsMono Nerd Font Propo`) — іконки в барі
+- Material Symbols Rounded — іконки в барі (AUR: `ttf-material-symbols-variable-git`, або статичний `.ttf`/`.woff2` з [fonts.google.com/icons](https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded))
+- SF Pro Display — шрифт тексту/годинника в барі
 - `powerprofilesctl`, `nmcli`, `bluetoothctl` — тогли в Dashboard
 
 ## Встановлення

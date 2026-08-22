@@ -29,11 +29,11 @@ Rectangle {
     Text {
         id: icon
         anchors.centerIn: parent
-        text: "\uf141"
+        text: "\ue5d3" // more_horiz
         color: trayButton.open ? Colors.accent : Colors.fg
 
         font {
-            family: "JetBrainsMono Nerd Font Propo"
+            family: "Material Symbols Rounded"
             pixelSize: 14
         }
 
