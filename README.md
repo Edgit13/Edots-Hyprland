@@ -38,10 +38,10 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | `quickshell/bar/Dash/` | Dashboard: Wi-Fi / Bluetooth / DND тогли, MPRIS-плеєр, календар, профілі живлення (`powerprofilesctl`) |
 | `quickshell/scripts/` | `gamemode.sh` — вимикає анімації/blur/DND під час ігор; `modernmode.sh` — тогл HyprGlass через `hyprpm` |
 | `hypr/` | Модульний Hyprland-конфіг на Lua (`hyprland.lua` + `modules/*.lua`), `hyprlock/`, `hypridle.conf` |
-| `hypr/scripts/wallcolors.py` | Витягує палітру з поточної шпалери через `matugen` і генерує кольори для Hyprland, GTK, Quickshell, Kitty, Fish, Firefox |
+| `hypr/scripts/wallcolors.py` | Витягує палітру з поточної шпалери через `matugen` і генерує кольори для Hyprland, GTK, Quickshell, Kitty, Ghostty, Fish, Firefox |
 | `edots-hypr/` | Окрема "еко-система" утиліт: `tool-manager/` (`upkg` — обгортка над yay+flatpak, `utimer` — фоновий таймер), `tui-player/` (TUI-плеєр на Textual+VLC), `bin/edot-i18.py` (читає `settings.edot`), скрипти автозапуску/бекапу |
 | `gtk-3.0/`, `gtk-4.0/` | Тема GTK, синхронізована з тією ж палітрою |
-| `nvim/`, `fish/`, `kitty/`, `alacritty/`, `rofi/`, `swaync/`, `fastfetch/` | Конфіги супутніх застосунків |
+| `nvim/`, `fish/`, `kitty/`, `alacritty/`, `ghostty/`, `rofi/`, `swaync/`, `fastfetch/` | Конфіги супутніх застосунків |
 
 ## Скріншоти
 
@@ -86,6 +86,7 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | `awww` | демон шпалер (`awww img -t wave ...`, форк-заміна `swww` у офіційних репах Arch) |
 | `iproute2` (`ip`), `iputils` (`ping`) | RX/TX-трафік і пінг у `Network.qml` |
 | `alacritty` | термінал (запускається кнопками бару, окремо від дефолтного `kitty` з `binds.lua`) |
+| `ghostty` | термінал (опційно; той самий динамічний стиль/прозорість, що Kitty) |
 | `nautilus` | файловий менеджер (кнопка в меню бару — окремо від дефолтного `dolphin` у `binds.lua`) |
 | `zen-browser` | браузер (кнопка в меню бару — окремо від дефолтного `firefox` у `binds.lua`) |
 | `systemctl` | reboot/poweroff/suspend |
@@ -122,13 +123,37 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | `jq` | читає `hypr/colors.json` у змінні `fish` |
 | `fastfetch` | system-info (alias `ff`) |
 | `nvim` (LazyVim) | редактор (alias `e`); LazyVim стандартно тягне `git`, `ripgrep`, `fd` |
-| `kitty`, `alacritty` | термінали |
+| `kitty`, `alacritty`, `ghostty` | термінали |
 | `rofi` | лаунчер/меню (`Super+Space`) |
 | `dolphin` | файловий менеджер (`Super+E`) |
 | `firefox` | браузер (`Super+B`), + `firefox/chrome/` userChrome |
 | `tree`, `pnpm` | згадуються в `fish/config.fish` (alias/PATH) |
 
 ## Встановлення
+
+### Повний бутстрап (пакети + шрифти + symlink'и) — рекомендовано
+
+Тільки для Arch-based дистрибутивів (Arch, EndeavourOS, Manjaro, CachyOS).
+Ставить усе з таблиць залежностей вище через `pacman`/`yay` (бутстрапить `yay`
+сам, якщо його нема), потім сам клонує репо й запускає `sync.sh install`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Edgit13/Edots-Hyprland/master/install.sh | bash
+```
+
+Або локально, якщо репо вже склоновано:
+
+```bash
+git clone git@github.com:Edgit13/Edots-Hyprland.git ~/Dotfiles
+cd ~/Dotfiles
+./install.sh
+```
+
+`install.sh` не падає на одному невдалому пакеті — збирає список пропусків
+і показує в кінці, щоб доставити вручну (назви AUR-пакетів час від часу
+міняються). HyprGlass і SF Pro Display — опційні, помічено про них окремо.
+
+### Лише symlink'и (пакети вже стоять)
 
 ```bash
 git clone git@github.com:Edgit13/Edots-Hyprland.git ~/Dotfiles
@@ -152,6 +177,7 @@ qs -p ~/.config/quickshell/bar
 
 ## Синхронізація дотфайлів (`sync.sh`)
 
+
 Раніше конфіги доводилось копіювати вручну і в `~/.config`, і назад у репо.
 `sync.sh` вирішує це через **symlink**: `~/.config/hypr` і `~/Dotfiles/hypr` —
 це одна й та сама тека на диску. Правиш файл з будь-якого боку — зміна одразу
@@ -163,7 +189,7 @@ qs -p ~/.config/quickshell/bar
 ./sync.sh unlink    # прибрати symlink'и (бекапи лишаються в ~/.config-backup-*)
 ```
 
-Що лінкується: `alacritty`, `fastfetch`, `fish`, `gtk-3.0`, `gtk-4.0`, `hypr`,
+Що лінкується: `alacritty`, `fastfetch`, `fish`, `ghostty`, `gtk-3.0`, `gtk-4.0`, `hypr`,
 `kitty`, `nvim`, `quickshell`, `rofi`, `swaync`, `edots-hypr` (→ `~/edots-hypr`),
 а також файли `dolphinrc` і `kdeglobals`. Список тек/цілей редагується прямо
 в масиві `LINKS` на початку скрипта.
@@ -202,7 +228,7 @@ Edots-Hyprland/
 ├── quickshell/scripts/   # gamemode.sh, modernmode.sh
 ├── edots-hypr/           # tool-manager (upkg, utimer), tui-player, скрипти автозапуску/бекапу
 ├── gtk-3.0/ gtk-4.0/     # GTK-тема
-├── kitty/ alacritty/     # термінали
+├── kitty/ alacritty/ ghostty/  # термінали
 ├── fish/                # шел
 ├── nvim/                # LazyVim-конфіг
 ├── rofi/                # лаунчер
