@@ -1,0 +1,29 @@
+# Ghostty — під той самий стиль, що Kitty/Alacritty в цьому рису.
+# Кольори — окремий файл, перегенеровується wallcolors.py при зміні шпалери.
+config-file = ghostty-colors.conf
+
+font-family = "JetBrainsMono Nerd Font"
+font-size = 11
+
+window-padding-x = 12
+window-padding-y = 12
+window-padding-balance = true
+
+# Прозорість — 0.65. Через баг Ghostty на Hyprland/Wayland ця настройка
+# сама по собі часто НЕ спрацьовує (відомий issue, альфа-канал GTK-білда) —
+# реальну прозорість форсує window rule "ghostty-opacity" у rules.lua.
+# Лишаю тут про всяк випадок (на майбутнє, якщо баг пофіксять).
+background-opacity = 0.65
+background-blur = false
+
+# Рамка/заокруглення/тінь — теж з Hyprland (decoration.rounding = 30,
+# shadow.enabled = true), не дублюємо тут через CSD.
+window-decoration = false
+
+cursor-style = block
+cursor-style-blink = true
+
+mouse-hide-while-typing = true
+
+# Live-reload конфігу вбудований у Ghostty (файли підхоплюються на льоту),
+# додатково: ctrl+shift+, для форс-релоаду.

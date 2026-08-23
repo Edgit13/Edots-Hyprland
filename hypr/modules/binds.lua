@@ -3,7 +3,7 @@
 ---------------------
 
 -- Set programs that you use
-local terminal = "kitty"
+local terminal = "ghostty"
 local fileManager = "dolphin"
 local menu = "rofi -show drun"
 local screen = "~/.local/bin/rishot"

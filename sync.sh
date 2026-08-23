@@ -23,6 +23,7 @@ LINKS=(
   "alacritty:$CONFIG_HOME/alacritty"
   "fastfetch:$CONFIG_HOME/fastfetch"
   "fish:$CONFIG_HOME/fish"
+  "ghostty:$CONFIG_HOME/ghostty"
   "gtk-3.0:$CONFIG_HOME/gtk-3.0"
   "gtk-4.0:$CONFIG_HOME/gtk-4.0"
   "hypr:$CONFIG_HOME/hypr"

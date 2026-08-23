@@ -33,38 +33,23 @@ get_val() {
 CURRENTLY_ON=$(cat "$STATE_FILE" 2>/dev/null)
 
 if [ "$CURRENTLY_ON" = "1" ]; then
-    # ---- OFF: restore the exact values captured before turning on ----
-    if [ -f "$SNAPSHOT_FILE" ]; then
-        source "$SNAPSHOT_FILE"
-        hyprctl eval "hl.config({
-            general = { gaps_in = ${SNAP_GAPS_IN:-5}, gaps_out = ${SNAP_GAPS_OUT:-10}, border_size = ${SNAP_BORDER:-1} },
-            animations = { enabled = ${SNAP_ANIM:-1} },
-            decoration = {
-                shadow = { enabled = ${SNAP_SHADOW:-1} },
-                blur = { enabled = ${SNAP_BLUR:-1} },
-                rounding = ${SNAP_ROUNDING:-30},
-            },
-            misc = {},
-        })"
-        rm -f "$SNAPSHOT_FILE"
-    else
-        # No snapshot (e.g. first-ever run got interrupted) — fall back to
-        # your actual real defaults from decorations.lua as a safety net.
-        hyprctl eval "hl.config({
-            general = { gaps_in = 5, gaps_out = 10, border_size = 1 },
-            animations = { enabled = 1 },
-            decoration = { shadow = { enabled = 1 }, blur = { enabled = 1 }, rounding = 30 },
-            misc = {},
-        })"
-    fi
+    # ---- OFF: reload the config from disk instead of hand-restoring ----
+    # decorations.lua/animations.lua already contain the real defaults, so
+    # a plain `hyprctl reload` re-parses hyprland.lua and discards whatever
+    # was set at runtime via `eval`/hl.config() — guaranteed to match the
+    # actual config files, unlike rebuilding values from a captured snapshot.
+    hyprctl reload
+    rm -f "$SNAPSHOT_FILE"
 
     swaync-client -df >/dev/null 2>&1
     command -v cpupower >/dev/null 2>&1 && pkexec cpupower frequency-set -g schedutil >/dev/null 2>&1 &
-    notify-send -a "GameMode" "Game Mode: OFF" "Restored captured values" -i input-gaming >/dev/null 2>&1
+    notify-send -a "GameMode" "Game Mode: OFF" "Config reloaded from disk" -i input-gaming >/dev/null 2>&1
 
     echo "0" > "$STATE_FILE"
 else
-    # ---- ON: capture live values FIRST, then zero everything out ----
+    # ---- ON: zero everything out for the session ----
+    # (snapshot capture kept only for the log/debugging — OFF no longer
+    # depends on it, since it now restores via `hyprctl reload` instead.)
     {
         echo "SNAP_GAPS_IN=$(get_val general:gaps_in)"
         echo "SNAP_GAPS_OUT=$(get_val general:gaps_out)"
