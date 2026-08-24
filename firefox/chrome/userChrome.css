@@ -10,7 +10,7 @@
    3. Restart Firefox
    ========================================================================== */
 
-@import url("file:///home/eduard/.config/firefox-colors.css");
+@import url("../../../../.config/firefox-colors.css");
 
 :root {
   /* Fallbacks so the UI doesn't break before wallcolors.py has run once.

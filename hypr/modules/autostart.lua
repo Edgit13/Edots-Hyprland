@@ -8,7 +8,7 @@
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function()
-	hl.exec_cmd("/home/eduard/.config/quickshell/bar/reload.sh")
+	hl.exec_cmd("~/.config/quickshell/bar/reload.sh")
 	hl.exec_cmd("awww-daemon")
 	hl.exec_cmd("wl-paste --watch cliphist store")
 	hl.exec_cmd("sleep 5 && hyprctl setcursor Moga-Black 24")

@@ -2,7 +2,7 @@
   "$schema": "https://github.com",
   "logo": {
     "type": "kitty-direct", // <-- Change "kitty" to "kitty-direct" here
-    "source": "/home/eduard/edots-hypr/Avatar.png",
+    "source": "~/edots-hypr/Avatar.png",
     "width": 28,
     "height": 14,
     "padding": {

@@ -14,7 +14,7 @@
    3. Перезапустити Firefox
    ========================================================================== */
 
-@import url("file:///home/eduard/.config/firefox-colors.css");
+@import url("../../../../.config/firefox-colors.css");
 
 @-moz-document url-prefix("about:") {
   :root {

@@ -15,7 +15,7 @@ PanelWindow {
     property bool everOpened: false
     signal requestClose()
 
-    property string wallpaperDir: "/home/eduard/Pictures/Wallpapers"
+    property string wallpaperDir: Quickshell.env("HOME") + "/Pictures/Wallpapers"
 
     onOpenChanged: if (open) everOpened = true
 
