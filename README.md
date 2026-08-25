@@ -72,24 +72,37 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | JetBrainsMono Nerd Font | Alacritty, іконки в `hyprlock-music.sh` |
 | SF Pro Display | текст/годинник у барі |
 | Fira Code | Rofi |
+| Google Sans Flex (`gtk-3.0`/`gtk-4.0` `settings.ini`, `@opsz=11,wght=500`) | системний GTK-шрифт; з кінця 2025 випущений як OSS (SIL OFL), в pacman/AUR ще нема — `install.sh` качає статичну Regular-версію з дзеркала LineageOS; за повними variable-осями йди на [fonts.google.com](https://fonts.google.com/specimen/Google+Sans+Flex) |
+
+> ⚠️ Курсор-тема `Moga-Black` (та сама `settings.ini`) — не має надійного відомого джерела пакета; `install.sh` її НЕ ставить. Постав вручну (пошук по AUR чи gtk-темах) і за потреби зміни назву в `settings.ini`.
 
 ### CLI-інструменти, які напряму викликає бар (Quickshell `Process{}`)
 
 | Програма | Навіщо |
 |---|---|
 | `NetworkManager` (`nmcli`) | Wi-Fi тогл і статус у `Network.qml` / Dashboard |
+| `network-manager-applet` (`nm-applet`) | автозапуск (`autostart.lua`), треюшна іконка мережі |
 | `bluez` (`bluetoothctl`) | Bluetooth тогл у Dashboard |
+| `blueman` (`blueman-applet`) | автозапуск (`autostart.lua`), треюшна іконка Bluetooth |
+| `wireplumber` (`wpctl`) | гучність/мьют з клавіш (`binds.lua`) |
 | `power-profiles-daemon` (`powerprofilesctl`) | профілі живлення у Dashboard |
 | `swaync` + `swaync-client` | сповіщення, DND, лічильник |
-| `cliphist` + `wl-clipboard` (`wl-copy`) | історія буфера обміну |
-| `brightnessctl` | яскравість екрана (слайдер у Dashboard) |
+| `cliphist` + `wl-clipboard` (`wl-copy`/`wl-paste`) | історія буфера обміну |
+| `brightnessctl` | яскравість екрана (слайдер у Dashboard, клавіші) |
 | `awww` | демон шпалер (`awww img -t wave ...`, форк-заміна `swww` у офіційних репах Arch) |
 | `iproute2` (`ip`), `iputils` (`ping`) | RX/TX-трафік і пінг у `Network.qml` |
 | `alacritty` | термінал (запускається кнопками бару, окремо від дефолтного `kitty` з `binds.lua`) |
 | `ghostty` | термінал (опційно; той самий динамічний стиль/прозорість, що Kitty) |
 | `nautilus` | файловий менеджер (кнопка в меню бару — окремо від дефолтного `dolphin` у `binds.lua`) |
 | `zen-browser` | браузер (кнопка в меню бару — окремо від дефолтного `firefox` у `binds.lua`) |
+| `hyprscreen` (AUR) | запис екрана, `Super+Shift+U` (`binds.lua`, змінна `screen_rec`) |
+| `xdg-desktop-portal-hyprland` | портали (screen share/pick для `hyprscreen` та іншого) |
+| `starship` | промпт у fish (`config.fish`) |
 | `systemctl` | reboot/poweroff/suspend |
+
+> ⚠️ `Super+U` (`binds.lua`, змінна `screen` = `~/.local/bin/rishot`) — це твій власний скрипт/білд скріншотів, не публічний пакет. `install.sh` його НЕ ставить; поклади свій білд у `~/.local/bin/rishot` сам, або зміни бінд на `hyprshot`/`hyprscreen`.
+>
+> ⚠️ `Dash/Panel.qml` викликає `qsh ipc call menu toggle`, а всюди інде (`binds.lua`) — `qs -c bar ipc call ...`. Схоже на одруківку (`qsh` замість `qs`) — вартувало б звірити, чи в тебе справді є алiас/бінарник `qsh`, інакше ця кнопка мовчки не спрацює.
 
 ### Допоміжні скрипти
 
@@ -120,6 +133,7 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | Програма | Навіщо |
 |---|---|
 | `fish` | основний шел, `config.fish` |
+| `starship` | промпт (`starship init fish`) |
 | `jq` | читає `hypr/colors.json` у змінні `fish` |
 | `fastfetch` | system-info (alias `ff`) |
 | `nvim` (LazyVim) | редактор (alias `e`); LazyVim стандартно тягне `git`, `ripgrep`, `fd` |

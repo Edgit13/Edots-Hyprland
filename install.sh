@@ -53,21 +53,22 @@ cd "$REPO_DIR" || exit 1
 # ───────────────────────── pacman (офіційні репо) ─────────────────────────
 PACMAN_PKGS=(
   # Ядро Hyprland
-  hyprland hyprlock hypridle
+  hyprland hyprlock hypridle xdg-desktop-portal-hyprland
   # Шрифти
   ttf-material-symbols-variable ttf-fira-code
   # CLI-інструменти бару
-  networkmanager bluez bluez-utils power-profiles-daemon
-  wl-clipboard brightnessctl iproute2 iputils
+  networkmanager network-manager-applet bluez bluez-utils blueman
+  power-profiles-daemon wireplumber
+  wl-clipboard brightnessctl iproute2 iputils slurp wf-recorder
   # Термінали / застосунки
   alacritty ghostty kitty nautilus dolphin firefox
   # Допоміжні скрипти
-  libnotify cpupower gamemode playerctl bc
+  libnotify cpupower gamemode playerctl bc starship
   # edots-hypr еко-система
   figlet inotify-tools flatpak python-pip
   vlc
   # Термінал/шел/інше
-  fish jq fastfetch neovim git ripgrep fd rofi tree
+  fish jq fastfetch neovim git ripgrep fd rofi tree curl
 )
 
 c_info "Синхронізую бази pacman..."
@@ -85,6 +86,28 @@ for pkg in "${PACMAN_PKGS[@]}"; do
     FAILED+=("pacman:$pkg")
   fi
 done
+
+# ───────────────────────── Google Sans Flex (GTK font, тепер OSS) ─────────────────────────
+# gtk-3.0/gtk-4.0 налаштовані на "Google Sans Flex" — Google випустив цей шрифт
+# як open source (SIL OFL) в кінці 2025, але в pacman/AUR його ще нема (станом
+# на момент написання скрипта). Качаємо статичну Regular-версію з офіційного
+# дзеркала LineageOS (той самий шрифт, ліцензія та сама, це не сторонній форк).
+FONT_DIR="$HOME/.local/share/fonts"
+if [ ! -f "$FONT_DIR/GoogleSansFlex-Regular.ttf" ]; then
+  c_info "Качаю Google Sans Flex (GTK-шрифт)..."
+  mkdir -p "$FONT_DIR"
+  if curl -fsSL -o "$FONT_DIR/GoogleSansFlex-Regular.ttf" \
+    "https://raw.githubusercontent.com/LineageOS/android_external_google-fonts_google-sans-flex/lineage-23.2/GoogleSansFlex-Regular.ttf"; then
+    fc-cache -f "$FONT_DIR" >/dev/null 2>&1
+    c_ok "Google Sans Flex (Regular)"
+    c_warn "  Це лише статична Regular-інстанція, не повний variable-шрифт —"
+    c_warn "  вага/opsz з gtk-3.0/settings.ini (@opsz=11,wght=500) не відпрацюють."
+    c_warn "  Для повної підтримки осей качай variable TTF вручну з fonts.google.com/specimen/Google+Sans+Flex"
+  else
+    c_warn "не вдалося скачати Google Sans Flex — постав вручну з fonts.google.com"
+    FAILED+=("font:google-sans-flex")
+  fi
+fi
 
 # ───────────────────────── бутстрап yay ─────────────────────────
 if ! command -v yay >/dev/null 2>&1; then
@@ -106,6 +129,7 @@ AUR_PKGS=(
   awww
   zen-browser-bin
   matugen
+  hyprscreen
 )
 
 if command -v yay >/dev/null 2>&1; then
@@ -166,6 +190,13 @@ fi
 # ───────────────────────── SF Pro Display (опційно, не FOSS) ─────────────────────────
 c_warn "SF Pro Display — пропріетарний Apple-шрифт, автоматично НЕ ставлю."
 c_warn "  Опційна неофіційна AUR-збірка: yay -S otf-san-francisco (перевір légal-статус сам)."
+
+# ───────────────────────── речі, які скрипт свідомо НЕ ставить ─────────────────────────
+c_warn "Курсор-тема 'Moga-Black' (gtk-3.0/gtk-4.0 settings.ini) — не знайшов надійного"
+c_warn "  джерела пакета, постав вручну (AUR-пошук або themes.gtk.org) і заміни назву,"
+c_warn "  якщо поставиш під іншою."
+c_warn "'screen = ~/.local/bin/rishot' (binds.lua) — це твій власний скрипт/білд,"
+c_warn "  не публічний пакет. Скопіюй його в ~/.local/bin сам, або зміни бінд на hyprshot/hyprscreen."
 
 # ───────────────────────── sync.sh install ─────────────────────────
 if [ -x "$REPO_DIR/sync.sh" ]; then
