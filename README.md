@@ -96,13 +96,10 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 | `nautilus` | файловий менеджер (кнопка в меню бару — окремо від дефолтного `dolphin` у `binds.lua`) |
 | `zen-browser` | браузер (кнопка в меню бару — окремо від дефолтного `firefox` у `binds.lua`) |
 | `hyprscreen` (AUR) | запис екрана, `Super+Shift+U` (`binds.lua`, змінна `screen_rec`) |
+| [`rishot`](https://github.com/Gakuseei/rishot) | скріншоти + анотації, `Super+U` (`binds.lua`, змінна `screen`); власний інсталятор, `install.sh` ставить через нього |
 | `xdg-desktop-portal-hyprland` | портали (screen share/pick для `hyprscreen` та іншого) |
 | `starship` | промпт у fish (`config.fish`) |
 | `systemctl` | reboot/poweroff/suspend |
-
-> ⚠️ `Super+U` (`binds.lua`, змінна `screen` = `~/.local/bin/rishot`) — це твій власний скрипт/білд скріншотів, не публічний пакет. `install.sh` його НЕ ставить; поклади свій білд у `~/.local/bin/rishot` сам, або зміни бінд на `hyprshot`/`hyprscreen`.
->
-> ⚠️ `Dash/Panel.qml` викликає `qsh ipc call menu toggle`, а всюди інде (`binds.lua`) — `qs -c bar ipc call ...`. Схоже на одруківку (`qsh` замість `qs`) — вартувало б звірити, чи в тебе справді є алiас/бінарник `qsh`, інакше ця кнопка мовчки не спрацює.
 
 ### Допоміжні скрипти
 

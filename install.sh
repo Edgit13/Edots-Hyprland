@@ -109,6 +109,8 @@ PACMAN_PKGS=(
   vlc
   # Термінал/шел/інше
   fish jq fastfetch neovim git ripgrep fd rofi tree curl
+  # опційні залежності rishot (мульти-монітор склейка, діалог збереження)
+  imagemagick kdialog
 )
 
 c_info "Синхронізую бази pacman..."
@@ -190,6 +192,19 @@ else
   FAILED+=("aur:усі (немає yay)")
 fi
 
+# ───────────────────────── rishot (скріншоти + анотації) ─────────────────────────
+# https://github.com/Gakuseei/rishot — власний офіційний інсталятор, вимагає
+# quickshell (уже поставлений вище). Ставить сам себе на PATH.
+if ! command -v rishot >/dev/null 2>&1; then
+  c_info "Ставлю rishot..."
+  if curl -fsSL https://raw.githubusercontent.com/Gakuseei/rishot/main/install.sh | sh; then
+    c_ok "rishot"
+  else
+    c_warn "інсталятор rishot не вдався — постав вручну: curl -fsSL https://raw.githubusercontent.com/Gakuseei/rishot/main/install.sh | sh"
+    FAILED+=("rishot")
+  fi
+fi
+
 # ───────────────────────── HyprGlass (опційний плагін) ─────────────────────────
 if command -v hyprpm >/dev/null 2>&1; then
   c_info "Ставлю HyprGlass через hyprpm (опційно)..."
@@ -235,8 +250,6 @@ c_warn "  Опційна неофіційна AUR-збірка: yay -S otf-san-f
 c_warn "Курсор-тема 'Moga-Black' (gtk-3.0/gtk-4.0 settings.ini) — не знайшов надійного"
 c_warn "  джерела пакета, постав вручну (AUR-пошук або themes.gtk.org) і заміни назву,"
 c_warn "  якщо поставиш під іншою."
-c_warn "'screen = ~/.local/bin/rishot' (binds.lua) — це твій власний скрипт/білд,"
-c_warn "  не публічний пакет. Скопіюй його в ~/.local/bin сам, або зміни бінд на hyprshot/hyprscreen."
 
 # ───────────────────────── sync.sh install ─────────────────────────
 if [ -x "$REPO_DIR/sync.sh" ]; then
