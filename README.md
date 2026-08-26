@@ -167,6 +167,16 @@ cd ~/Dotfiles
 і показує в кінці, щоб доставити вручну (назви AUR-пакетів час від часу
 міняються). HyprGlass і SF Pro Display — опційні, помічено про них окремо.
 
+На самому початку `install.sh` запитає, чи ставити шпалери — вони живуть
+в окремому репо [Edot-Wallpapers](https://github.com/Edgit13/Edot-Wallpapers)
+(не в цьому), і при згоді клонуються прямо в `~/Pictures/Wallpapers`.
+Погодишся — покаже шлях перед завантаженням; відмовишся — просто пропустить
+крок, шпалери можна доставити пізніше вручну:
+
+```bash
+git clone https://github.com/Edgit13/Edot-Wallpapers.git ~/Pictures/Wallpapers
+```
+
 ### Лише symlink'и (пакети вже стоять)
 
 ```bash

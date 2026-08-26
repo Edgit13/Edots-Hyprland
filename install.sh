@@ -36,6 +36,46 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
+# ───────────────────────── шпалери (окремий репо) ─────────────────────────
+WALLPAPERS_REPO="https://github.com/Edgit13/Edot-Wallpapers.git"
+WALLPAPERS_DIR="$HOME/Pictures/Wallpapers"
+
+echo
+echo "Шпалери зберігаються в окремому репозиторії: $WALLPAPERS_REPO"
+echo "Якщо погодишся — вони скачаються в: $WALLPAPERS_DIR"
+read -r -p "Поставити шпалери? [y/N]: " wp_answer
+case "$wp_answer" in
+  [Yy]*)
+    if [ -d "$WALLPAPERS_DIR/.git" ]; then
+      c_info "Репо шпалер вже є в $WALLPAPERS_DIR — оновлюю (git pull)..."
+      if git -C "$WALLPAPERS_DIR" pull --ff-only; then
+        c_ok "шпалери оновлено"
+      else
+        c_warn "git pull для шпалер не вдався"
+        FAILED+=("wallpapers:pull")
+      fi
+    else
+      if [ -e "$WALLPAPERS_DIR" ]; then
+        wp_backup="$HOME/.config-backup-$(date +%Y%m%d-%H%M%S)"
+        mkdir -p "$wp_backup"
+        mv "$WALLPAPERS_DIR" "$wp_backup/Wallpapers"
+        c_warn "існуючу $WALLPAPERS_DIR перенесено в $wp_backup/Wallpapers"
+      fi
+      mkdir -p "$(dirname "$WALLPAPERS_DIR")"
+      c_info "Клоную шпалери в $WALLPAPERS_DIR..."
+      if git clone "$WALLPAPERS_REPO" "$WALLPAPERS_DIR"; then
+        c_ok "шпалери склоновано в $WALLPAPERS_DIR"
+      else
+        c_warn "git clone шпалер не вдався"
+        FAILED+=("wallpapers:clone")
+      fi
+    fi
+    ;;
+  *)
+    c_info "Пропускаю шпалери (постав пізніше: git clone $WALLPAPERS_REPO $WALLPAPERS_DIR)."
+    ;;
+esac
+
 c_info "sudo знадобиться кілька разів (pacman, yay-бутстрап, symlink /usr/local/bin)."
 sudo -v
 
