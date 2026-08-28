@@ -46,6 +46,11 @@ PanelWindow {
         id: modernToggler
     }
 
+    // Процес для перемикання Pill-дизайну бару
+    Process {
+        id: pillDesignToggler
+    }
+
     // Головний акриловий контейнер меню
     Rectangle {
         anchors.fill: parent
@@ -142,6 +147,16 @@ PanelWindow {
                     modernToggler.command = [Quickshell.env("HOME") + "/.config/quickshell/scripts/modernmode.sh"]
                     modernToggler.running = true
                     // Не закриваємо меню — щоб було видно, як індикатор перемкнувся
+                }
+            }
+
+            MenuToggleItem {
+                text: "Pill-дизайн бару"
+                icon: "\ue40a" // palette (форма/hover-glow островів, github.com/Gakuseei/Ricelin)
+                active: PillDesignState.active
+                onClicked: {
+                    pillDesignToggler.command = [Quickshell.env("HOME") + "/.config/quickshell/scripts/pilldesign.sh"]
+                    pillDesignToggler.running = true
                 }
             }
 

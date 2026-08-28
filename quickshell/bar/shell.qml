@@ -58,14 +58,55 @@ ShellRoot {
     // Спільна "пілюля" для лівого/правого островів — окрема капсула на
     // групу, як у референсі (github.com/patheonsceo/Dynamic-island-for-arch),
     // а не один суцільний бар.
+    //
+    // Pill-дизайн (Меню → Дизайн, натхненний github.com/Gakuseei/Ricelin):
+    // додає hover-grow і повільну glow-пульсацію рамки. Форма/структура —
+    // ті самі, тільки додаткові анімації, коли PillDesignState.active.
     component IslandPill: Rectangle {
+        id: pillRoot
         radius: GameModeState.active ? 0 : height / 2
         color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, 1.0)
-        border.width: GameModeState.active ? 0 : 1
-        border.color: Qt.rgba(Colors.fg.r, Colors.fg.g, Colors.fg.b, 0.12)
+
+        scale: (PillDesignState.active && pillHover.hovered && !GameModeState.active) ? 1.045 : 1.0
+        transformOrigin: Item.Center
+
+        border.width: GameModeState.active ? 0
+            : (PillDesignState.active && pillHover.hovered ? 2 : 1)
+        border.color: PillDesignState.active
+            ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b,
+                      pillHover.hovered ? 0.70 : pillGlow.opacity)
+            : Qt.rgba(Colors.fg.r, Colors.fg.g, Colors.fg.b, 0.12)
+
+        HoverHandler {
+            id: pillHover
+            enabled: PillDesignState.active
+        }
+
+        // Повільне "дихання" рамки акцентним кольором, коли Pill-дизайн
+        // увімкнено і острів не під курсором.
+        SequentialAnimation {
+            id: pillGlowAnim
+            running: PillDesignState.active && !GameModeState.active
+            loops: Animation.Infinite
+            NumberAnimation { target: pillGlow; property: "opacity"; to: 0.42; duration: 1600; easing.type: Easing.InOutSine }
+            NumberAnimation { target: pillGlow; property: "opacity"; to: 0.18; duration: 1600; easing.type: Easing.InOutSine }
+        }
+        QtObject {
+            id: pillGlow
+            property real opacity: 0.18
+        }
 
         Behavior on radius {
             NumberAnimation { duration: 150 }
+        }
+        Behavior on scale {
+            NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.8 }
+        }
+        Behavior on border.width {
+            NumberAnimation { duration: 160 }
+        }
+        Behavior on border.color {
+            ColorAnimation { duration: 160 }
         }
     }
 
@@ -145,16 +186,47 @@ ShellRoot {
 
                 radius: GameModeState.active ? 0 : height / 2
                 color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, 0.97)
-                border.color: Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, GameModeState.active ? 0 : 0.25)
-                border.width: GameModeState.active ? 0 : 1
+                border.color: PillDesignState.active
+                    ? Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b,
+                              notchHover.hovered ? 0.75 : notchGlow.opacity)
+                    : Qt.rgba(Colors.accent.r, Colors.accent.g, Colors.accent.b, GameModeState.active ? 0 : 0.25)
+                border.width: GameModeState.active ? 0
+                    : (PillDesignState.active && notchHover.hovered ? 2 : 1)
                 clip: true
+
+                scale: (PillDesignState.active && notchHover.hovered && !GameModeState.active) ? 1.03 : 1.0
+                transformOrigin: Item.Center
+
+                HoverHandler {
+                    id: notchHover
+                    enabled: PillDesignState.active
+                }
+
+                SequentialAnimation {
+                    running: PillDesignState.active && !GameModeState.active
+                    loops: Animation.Infinite
+                    NumberAnimation { target: notchGlow; property: "opacity"; to: 0.42; duration: 1600; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: notchGlow; property: "opacity"; to: 0.18; duration: 1600; easing.type: Easing.InOutSine }
+                }
+                QtObject {
+                    id: notchGlow
+                    property real opacity: 0.18
+                }
 
                 Behavior on radius {
                     NumberAnimation { duration: 150 }
                 }
 
+                Behavior on scale {
+                    NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.8 }
+                }
+
                 Behavior on border.color {
                     ColorAnimation { duration: 260; easing.type: Easing.OutCubic }
+                }
+
+                Behavior on border.width {
+                    NumberAnimation { duration: 160 }
                 }
 
                 MouseArea {
