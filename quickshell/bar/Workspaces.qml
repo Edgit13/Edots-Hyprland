@@ -16,8 +16,9 @@ RowLayout {
             property var ws: Hyprland.workspaces.values.find(w => w.id === index + 1)
             property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
 
-            implicitWidth: label.implicitWidth + 14
+            implicitWidth: 24
             implicitHeight: 22
+            Layout.alignment: Qt.AlignVCenter
             radius: GameModeState.active ? 0 : 6
 
             color: isActive ? Colors.bg3 : (ws ? Colors.bg2 : "transparent")
