@@ -24,7 +24,7 @@ echo "--- $(date) ---"
 
 # Reads a live Lua config value, e.g. get_val general.gaps_in
 get_val() {
-    hyprctl getoption "$1" | awk '
+  hyprctl getoption "$1" | awk '
         /^(int|float|bool|str):/ { print $2; exit }
         /css gap data:/ { print $4; exit }
     '
@@ -33,46 +33,46 @@ get_val() {
 CURRENTLY_ON=$(cat "$STATE_FILE" 2>/dev/null)
 
 if [ "$CURRENTLY_ON" = "1" ]; then
-    # ---- OFF: reload the config from disk instead of hand-restoring ----
-    # decorations.lua/animations.lua already contain the real defaults, so
-    # a plain `hyprctl reload` re-parses hyprland.lua and discards whatever
-    # was set at runtime via `eval`/hl.config() — guaranteed to match the
-    # actual config files, unlike rebuilding values from a captured snapshot.
-    hyprctl reload
-    rm -f "$SNAPSHOT_FILE"
+  # ---- OFF: reload the config from disk instead of hand-restoring ----
+  # decorations.lua/animations.lua already contain the real defaults, so
+  # a plain `hyprctl reload` re-parses hyprland.lua and discards whatever
+  # was set at runtime via `eval`/hl.config() — guaranteed to match the
+  # actual config files, unlike rebuilding values from a captured snapshot.
+  hyprctl reload
+  rm -f "$SNAPSHOT_FILE"
 
-    swaync-client -df >/dev/null 2>&1
-    command -v cpupower >/dev/null 2>&1 && pkexec cpupower frequency-set -g schedutil >/dev/null 2>&1 &
-    notify-send -a "GameMode" "Game Mode: OFF" "Config reloaded from disk" -i input-gaming >/dev/null 2>&1
+  swaync-client -df >/dev/null 2>&1
+  command -v cpupower >/dev/null 2>&1 && pkexec cpupower frequency-set -g schedutil >/dev/null 2>&1 &
+  notify-send -a "GameMode" "Game Mode: OFF" "Config reloaded from disk" -i input-gaming >/dev/null 2>&1
 
-    echo "0" > "$STATE_FILE"
+  echo "0" >"$STATE_FILE"
 else
-    # ---- ON: zero everything out for the session ----
-    # (snapshot capture kept only for the log/debugging — OFF no longer
-    # depends on it, since it now restores via `hyprctl reload` instead.)
-    {
-        echo "SNAP_GAPS_IN=$(get_val general:gaps_in)"
-        echo "SNAP_GAPS_OUT=$(get_val general:gaps_out)"
-        echo "SNAP_BORDER=$(get_val general:border_size)"
-        echo "SNAP_ANIM=$(get_val animations:enabled)"
-        echo "SNAP_SHADOW=$(get_val decoration:shadow:enabled)"
-        echo "SNAP_BLUR=$(get_val decoration:blur:enabled)"
-        echo "SNAP_ROUNDING=$(get_val decoration:rounding)"
-    } > "$SNAPSHOT_FILE"
+  # ---- ON: zero everything out for the session ----
+  # (snapshot capture kept only for the log/debugging — OFF no longer
+  # depends on it, since it now restores via `hyprctl reload` instead.)
+  {
+    echo "SNAP_GAPS_IN=$(get_val general:gaps_in)"
+    echo "SNAP_GAPS_OUT=$(get_val general:gaps_out)"
+    echo "SNAP_BORDER=$(get_val general:border_size)"
+    echo "SNAP_ANIM=$(get_val animations:enabled)"
+    echo "SNAP_SHADOW=$(get_val decoration:shadow:enabled)"
+    echo "SNAP_BLUR=$(get_val decoration:blur:enabled)"
+    echo "SNAP_ROUNDING=$(get_val decoration:rounding)"
+  } >"$SNAPSHOT_FILE"
 
-    cat "$SNAPSHOT_FILE"   # goes into the log, so we can see what got captured
+  cat "$SNAPSHOT_FILE" # goes into the log, so we can see what got captured
 
-    hyprctl eval "hl.config({
+  hyprctl eval "hl.config({
         general = { gaps_in = 0, gaps_out = 0, border_size = 0 },
         animations = { enabled = 0 },
         decoration = { shadow = { enabled = 0 }, blur = { enabled = 0 }, rounding = 0 },
         misc = {},
     })"
 
-    swaync-client -dn >/dev/null 2>&1
-    command -v cpupower >/dev/null 2>&1 && pkexec cpupower frequency-set -g performance >/dev/null 2>&1 &
-    command -v gamemoded >/dev/null 2>&1 && gamemoded -r >/dev/null 2>&1 &
-    notify-send -a "GameMode" "Game Mode: ON" "Rounding, blur, shadow, gaps, border — all off" -i input-gaming >/dev/null 2>&1
+  swaync-client -dn >/dev/null 2>&1
+  command -v cpupower >/dev/null 2>&1 && pkexec cpupower frequency-set -g performance >/dev/null 2>&1 &
+  command -v gamemoded >/dev/null 2>&1 && gamemoded -r >/dev/null 2>&1 &
+  notify-send -a "GameMode" "Game Mode: ON" "Rounding, blur, shadow, gaps, border — all off" -i input-gaming >/dev/null 2>&1
 
-    echo "1" > "$STATE_FILE"
+  echo "1" >"$STATE_FILE"
 fi

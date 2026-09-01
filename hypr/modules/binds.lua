@@ -30,19 +30,23 @@ hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd(cliphistory))
 hl.bind(mainMod .. " + SHIFT + U", hl.dsp.exec_cmd(screen_rec))
 
+hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleLauncher"))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleWallpaper"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleClipboard"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleWifi"))
+hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleMixer"))
+hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("qs -c bar ipc call pill togglePower"))
+
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
+hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
+hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
 
 hl.bind(
 	mainMod .. " + M",
 	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'exit'")
 )
 
-hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
-
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("~/.config/quickshell/scripts/gamemode.sh"))
-hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleLauncher"))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 

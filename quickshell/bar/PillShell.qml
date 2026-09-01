@@ -53,19 +53,73 @@ ShellRoot {
 
         function showLauncher(): void { root.openSurface("launcher") }
         function toggleLauncher(): void { root.toggleSurface("launcher") }
+
         function showWallpaper(): void { root.openSurface("wallpaper") }
         function toggleWallpaper(): void { root.toggleSurface("wallpaper") }
+
+        function showClipboard(): void { root.openSurface("clipboard") }
+        function toggleClipboard(): void { root.toggleSurface("clipboard") }
+
+        function showMixer(): void { root.openSurface("mixer") }
+        function toggleMixer(): void { root.toggleSurface("mixer") }
+
+        function showWifi(): void { root.openSurface("wifi") }
+        function toggleWifi(): void { root.toggleSurface("wifi") }
+
+        function showMedia(): void { root.openSurface("media") }
+        function toggleMedia(): void { root.toggleSurface("media") }
+
+        function showLink(): void { root.openSurface("link") }
+        function toggleLink(): void { root.toggleSurface("link") }
+
+        function showPower(): void { root.openSurface("power") }
+        function togglePower(): void { root.toggleSurface("power") }
+
+        function showNotifications(): void { notificationsProc.running = true }
+        function toggleNotifications(): void { notificationsProc.running = true }
+
+        function showSettings(): void { root.openSurface("settings") }
+        function toggleSettings(): void { root.toggleSurface("settings") }
+
         function close(): void { root.activeSurface = "idle" }
+    }
+
+    Process {
+        id: notificationsProc
+        command: ["sh", "-c", "swaync-client -t"]
+        running: false
     }
 
     // "idle" (тільки годинник) | "hover" (розгорнутий рядок: воркспейси +
     // годинник + тригери) | "wallpaper" | "media" | "link" — модулі.
     property string activeSurface: "idle"
 
-    readonly property int idleHeight: 32
-    readonly property int idleHorizontalPadding: 16
+    readonly property int idleHeight: 36
+    readonly property int idleHorizontalPadding: 20
     readonly property int expandedWidth: 480
     readonly property int expandedHeight: 300
+
+    Variants {
+        model: Quickshell.screens
+
+        PanelWindow {
+            required property var modelData
+            screen: modelData
+
+            exclusionMode: ExclusionMode.Normal
+            exclusiveZone: root.idleHeight + 5
+
+            anchors {
+                top: true
+                left: true
+                right: true
+            }
+
+            implicitHeight: root.idleHeight + 5
+            color: "transparent"
+            mask: Region {}
+        }
+    }
 
     Variants {
         model: Quickshell.screens
@@ -412,6 +466,28 @@ ShellRoot {
 
                     Text {
                         Layout.alignment: Qt.AlignVCenter
+                        text: "\ue7f4" // notifications
+                        color: notificationsTriggerHover.hovered ? Colors.accent : Colors.grey1
+                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
+
+                        HoverHandler {
+                            id: notificationsTriggerHover
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: notificationsProc.running = true
+                        }
+                    }
+
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
                         text: "\ue5c3" // apps (той самий codepoint, що Menu/Button.qml)
                         color: launcherTriggerHover.hovered ? Colors.accent : Colors.grey1
                         font { family: "Material Symbols Rounded"; pixelSize: 15 }
@@ -429,6 +505,28 @@ ShellRoot {
                             anchors.margins: -4
                             cursorShape: Qt.PointingHandCursor
                             onClicked: root.activeSurface = "launcher"
+                        }
+                    }
+
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: "\ue8b8" // settings
+                        color: settingsTriggerHover.hovered ? Colors.accent : Colors.grey1
+                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
+
+                        HoverHandler {
+                            id: settingsTriggerHover
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.activeSurface = "settings"
                         }
                     }
                 }
@@ -513,6 +611,20 @@ ShellRoot {
                     anchors.margins: 14
                     visible: root.activeSurface === "wifi"
                     opacity: visible ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
+                }
+
+                // ---- поверхня settings ----
+                SettingsSurface {
+                    id: settingsSurface
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    visible: root.activeSurface === "settings"
+                    opacity: visible ? 1 : 0
+                    rootWindow: root
 
                     Behavior on opacity {
                         NumberAnimation { duration: 150 }

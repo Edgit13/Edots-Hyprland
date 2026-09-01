@@ -10,7 +10,10 @@ MouseArea {
     implicitHeight: mainLayout.implicitHeight
     cursorShape: Qt.PointingHandCursor
 
-    onClicked: toggleProc.running = true
+    onClicked: {
+        if (!toggleProc.running)
+            toggleProc.running = true
+    }
 
     Process {
         id: toggleProc
