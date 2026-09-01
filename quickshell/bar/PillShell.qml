@@ -21,11 +21,42 @@ import QtQuick.Layouts
 // в idle. Поверхні: wallpaper (WallpaperSurface.qml), media
 // (MediaSurface.qml), wifi (WifiSurface.qml — повний менеджер, бекенд
 // WifiService.qml), link (LinkSurface.qml, простий bluetooth-тогл — файл
-// НЕ чіпався). Решта поверхонь (calendar/mixer/clipboard) — наступні кроки.
+// НЕ чіпався), power (PowerSurface.qml, команди 1:1 з Power/Panel.qml,
+// той файл не чіпався), mixer (MixerSurface.qml — батарея + гучність +
+// яскравість, 1:1 з Battery.qml/Dash/Panel.qml sliders, жоден не
+// чіпався), clipboard (ClipboardSurface.qml, cliphist list/decode/
+// delete/wipe 1:1 з Clipboard/Panel.qml + ConfirmWipe.qml, жоден не
+// чіпався), launcher (LauncherSurface.qml — нативний QML-лаунчер замість
+// Rofi, через вбудований Quickshell.DesktopEntries API, без ручного
+// парсингу .desktop-файлів; binds.lua "Super+Space" не чіпався/лишається
+// паралельно). Решта поверхонь (calendar/tray) —
+// наступні кроки.
 // ==========================================================================
 
 ShellRoot {
     id: root
+
+    function openSurface(surface) {
+        activeSurface = surface
+        pill.forceActiveFocus()
+    }
+
+    function toggleSurface(surface) {
+        if (activeSurface === surface)
+            activeSurface = "idle"
+        else
+            openSurface(surface)
+    }
+
+    IpcHandler {
+        target: "pill"
+
+        function showLauncher(): void { root.openSurface("launcher") }
+        function toggleLauncher(): void { root.toggleSurface("launcher") }
+        function showWallpaper(): void { root.openSurface("wallpaper") }
+        function toggleWallpaper(): void { root.toggleSurface("wallpaper") }
+        function close(): void { root.activeSurface = "idle" }
+    }
 
     // "idle" (тільки годинник) | "hover" (розгорнутий рядок: воркспейси +
     // годинник + тригери) | "wallpaper" | "media" | "link" — модулі.
@@ -312,6 +343,94 @@ ShellRoot {
                             onClicked: root.activeSurface = "link"
                         }
                     }
+
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: "\uf8c7" // power_settings_new (той самий codepoint, що Power/Button.qml)
+                        color: powerTriggerHover.hovered ? Colors.red : Colors.grey1
+                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
+
+                        HoverHandler {
+                            id: powerTriggerHover
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.activeSurface = "power"
+                        }
+                    }
+
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: "\ue429" // tune (мікшер: батарея + гучність + яскравість)
+                        color: mixerTriggerHover.hovered ? Colors.accent : Colors.grey1
+                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
+
+                        HoverHandler {
+                            id: mixerTriggerHover
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.activeSurface = "mixer"
+                        }
+                    }
+
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: "\ue14f" // content_paste (той самий codepoint, що Clipboard/Button.qml)
+                        color: clipTriggerHover.hovered ? Colors.accent : Colors.grey1
+                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
+
+                        HoverHandler {
+                            id: clipTriggerHover
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.activeSurface = "clipboard"
+                        }
+                    }
+
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: "\ue5c3" // apps (той самий codepoint, що Menu/Button.qml)
+                        color: launcherTriggerHover.hovered ? Colors.accent : Colors.grey1
+                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
+
+                        HoverHandler {
+                            id: launcherTriggerHover
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.activeSurface = "launcher"
+                        }
+                    }
                 }
 
                 // ---- поверхня wallpaper ----
@@ -336,6 +455,56 @@ ShellRoot {
                     Behavior on opacity {
                         NumberAnimation { duration: 150 }
                     }
+                }
+
+                // ---- поверхня power ----
+                PowerSurface {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    visible: root.activeSurface === "power"
+                    opacity: visible ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
+                }
+
+                // ---- поверхня mixer (батарея + гучність + яскравість) ----
+                MixerSurface {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    visible: root.activeSurface === "mixer"
+                    opacity: visible ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
+                }
+
+                // ---- поверхня clipboard ----
+                ClipboardSurface {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    visible: root.activeSurface === "clipboard"
+                    opacity: visible ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
+                }
+
+                // ---- поверхня launcher ----
+                LauncherSurface {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    visible: root.activeSurface === "launcher"
+                    opacity: visible ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
+
+                    onAppLaunched: root.activeSurface = "idle"
                 }
 
                 // ---- поверхня wifi (повний менеджер) ----

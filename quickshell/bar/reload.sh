@@ -1,3 +1,4 @@
 #!/bin/bash
 
-qs -p $HOME/.config/quickshell/bar &
+pkill -f 'qs .*bar/shell.qml' 2>/dev/null || true
+qs -c bar &

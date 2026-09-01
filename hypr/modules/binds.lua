@@ -5,7 +5,6 @@
 -- Set programs that you use
 local terminal = "ghostty"
 local fileManager = "dolphin"
-local menu = "rofi -show drun"
 local screen = "~/.local/bin/rishot"
 local screen_rec = "hyprscreen"
 local browser = "firefox"
@@ -20,32 +19,30 @@ local sleep = "systemctl suspend"
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
--- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
-hl.bind(mainMod .. " + U ", hl.dsp.exec_cmd(screen))
-hl.bind(mainMod .. " + F3 ", hl.dsp.exec_cmd(sleep))
-hl.bind(mainMod .. " + END ", hl.dsp.exec_cmd(reboot))
-hl.bind(mainMod .. " + L ", hl.dsp.exec_cmd(lock))
-hl.bind(mainMod .. " + SHIFT + V ", hl.dsp.exec_cmd(cliphistory))
-hl.bind(mainMod .. " + SHIFT + U ", hl.dsp.exec_cmd(screen_rec))
-hl.bind(mainMod .. " + C ", hl.dsp.exec_cmd("qs -c bar ipc call wallpaper toggle"))
-hl.bind(mainMod .. " + B ", hl.dsp.exec_cmd(browser))
+
+hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(screen))
+hl.bind(mainMod .. " + F3", hl.dsp.exec_cmd(sleep))
+hl.bind(mainMod .. " + END", hl.dsp.exec_cmd(reboot))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(lock))
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd(cliphistory))
+hl.bind(mainMod .. " + SHIFT + U", hl.dsp.exec_cmd(screen_rec))
+
+hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleWallpaper"))
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
+
 hl.bind(
 	mainMod .. " + M",
-	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
+	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'exit'")
 )
+
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
--- Було: toggle floating. Тепер Super+V відкриває буфер обміну в барі —
--- якщо floating-toggle досі потрібен, перевісь на інший бінд (нижче
--- залишив коментар з варіантом).
-hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("qs -c bar ipc call clipboard toggle"))
 hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
 
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("~/.config/quickshell/scripts/gamemode.sh"))
-hl.bind(mainMod .. " + F2", hl.dsp.exec_cmd("qs -c bar ipc call dashboard toggle"))
-hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("qs -c bar ipc call pill toggleLauncher"))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 
@@ -96,6 +93,7 @@ hl.bind(
 	hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),
 	{ locked = true, repeating = true }
 )
+
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
 
