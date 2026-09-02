@@ -12,6 +12,7 @@ local reboot = "reboot"
 local cliphistory = "cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 local lock = "hyprlock -c ~/.config/hypr/hyprlock/hyprlock.conf"
 local sleep = "systemctl suspend"
+local logout = "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"
 
 ---------------------
 ---- KEYBINDINGS ----
@@ -24,6 +25,7 @@ local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 
 hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(screen))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(logout))
 hl.bind(mainMod .. " + F3", hl.dsp.exec_cmd(sleep))
 hl.bind(mainMod .. " + END", hl.dsp.exec_cmd(reboot))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(lock))
