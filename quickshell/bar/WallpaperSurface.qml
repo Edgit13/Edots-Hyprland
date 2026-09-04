@@ -27,7 +27,7 @@ Item {
 
             command = ["sh", "-c",
                 "awww img -t wave '" + path + "' && python3 " +
-                Quickshell.env("HOME") + "/.config/hypr/scripts/wallcolors.py '" + path + "'"
+                Quickshell.env("HOME") + "/.config/mango/scripts/wallcolors.py '" + path + "'"
             ]
             running = true
         }

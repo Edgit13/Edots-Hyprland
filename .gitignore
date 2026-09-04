@@ -1,9 +1,8 @@
 # ==========================================================================
 # Згенеровані wallcolors.py — перегенеровуються з шпалери, комітити не треба
 # ==========================================================================
-hypr/hypr-colors.lua
-hypr/hyprlock-colors.conf
-hypr/colors.json
+mango/colors.json
+mango/swaylock/colors.conf
 gtk-3.0/gtk-colors.css
 gtk-4.0/gtk-colors.css
 quickshell/bar/Colors.qml

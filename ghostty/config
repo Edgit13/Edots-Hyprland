@@ -9,15 +9,13 @@ window-padding-x = 12
 window-padding-y = 12
 window-padding-balance = true
 
-# Прозорість — 0.65. Через баг Ghostty на Hyprland/Wayland ця настройка
-# сама по собі часто НЕ спрацьовує (відомий issue, альфа-канал GTK-білда) —
-# реальну прозорість форсує window rule "ghostty-opacity" у rules.lua.
-# Лишаю тут про всяк випадок (на майбутнє, якщо баг пофіксять).
+# Прозорість — 0.65. На деяких Wayland-сесіях GTK-збірка Ghostty може не
+# завжди застосовувати альфа-канал ідеально, тож це лишається best-effort.
+# Лишаю тут про всяк випадок (на майбутнє, якщо поведінку покращать).
 background-opacity = 0.65
 background-blur = false
 
-# Рамка/заокруглення/тінь — теж з Hyprland (decoration.rounding = 30,
-# shadow.enabled = true), не дублюємо тут через CSD.
+# Рамка/заокруглення/тінь керуються композитором, не дублюємо їх тут через CSD.
 window-decoration = false
 
 cursor-style = block

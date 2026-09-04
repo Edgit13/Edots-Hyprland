@@ -27,7 +27,7 @@ LINKS=(
   "wallpapers:$HOME/Pictures/Wallpapers"
   "gtk-3.0:$CONFIG_HOME/gtk-3.0"
   "gtk-4.0:$CONFIG_HOME/gtk-4.0"
-  "hypr:$CONFIG_HOME/hypr"
+  "mango:$CONFIG_HOME/mango"
   "kitty:$CONFIG_HOME/kitty"
   "nvim:$CONFIG_HOME/nvim"
   "quickshell:$CONFIG_HOME/quickshell"
@@ -35,14 +35,14 @@ LINKS=(
   "swaync:$CONFIG_HOME/swaync"
   "dolphinrc:$CONFIG_HOME/dolphinrc"
   "kdeglobals:$CONFIG_HOME/kdeglobals"
-  "edots-hypr:$HOME/edots-hypr"
+  "edots:$HOME/edots"
 )
 
 # інструменти, що лінкуються в /usr/local/bin (потребують sudo)
 # формат: "шлях_у_репо:ціль_symlink'у"
 BIN_LINKS=(
-  "edots-hypr/tool-manager/upkg:/usr/local/bin/upkg"
-  "edots-hypr/tool-manager/utimer:/usr/local/bin/utimer"
+  "edots/tool-manager/upkg:/usr/local/bin/upkg"
+  "edots/tool-manager/utimer:/usr/local/bin/utimer"
 )
 
 c_green="\033[0;32m"; c_yellow="\033[0;33m"; c_red="\033[0;31m"; c_reset="\033[0m"
@@ -86,8 +86,8 @@ cmd_install() {
   echo
   chmod +x "$REPO_DIR"/quickshell/bar/reload.sh 2>/dev/null || true
   chmod +x "$REPO_DIR"/quickshell/scripts/*.sh 2>/dev/null || true
-  chmod +x "$REPO_DIR"/hypr/scripts/*.sh 2>/dev/null || true
-  chmod +x "$REPO_DIR"/edots-hypr/tool-manager/upkg "$REPO_DIR"/edots-hypr/tool-manager/utimer 2>/dev/null || true
+  chmod +x "$REPO_DIR"/mango/scripts/*.sh 2>/dev/null || true
+  chmod +x "$REPO_DIR"/edots/tool-manager/upkg "$REPO_DIR"/edots/tool-manager/utimer 2>/dev/null || true
   info "виставлено +x на скрипти"
 
   echo
@@ -110,11 +110,16 @@ cmd_install() {
   done
 
   if command -v python3 >/dev/null; then
-    python3 "$REPO_DIR/hypr/scripts/wallcolors.py" || warn "wallcolors.py впав, запусти вручну"
+    first_wallpaper=$(find "$HOME/Pictures/Wallpapers" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) 2>/dev/null | head -n 1)
+    if [ -n "${first_wallpaper:-}" ]; then
+      python3 "$REPO_DIR/mango/scripts/wallcolors.py" "$first_wallpaper" || warn "wallcolors.py впав, запусти вручну"
+    else
+      warn "не знайдено шпалер для первинної генерації кольорів"
+    fi
   fi
 
   echo
-  info "готово. qs -p $CONFIG_HOME/quickshell/bar"
+  info "готово. qs -p $CONFIG_HOME/quickshell/bar/shell.qml"
 }
 
 cmd_status() {

@@ -2,7 +2,7 @@
    userChrome.css — Ricelin theme for Firefox
    Pulls live colors from ~/.config/firefox-colors.css, written by
    wallcolors.py on every wallpaper change (same pipeline as your
-   kitty/hypr/gtk/swaync colors).
+   kitty/quickshell/gtk/swaync colors).
 
    SETUP:
    1. about:config -> toolkit.legacyUserProfileCustomizations.stylesheet -> true

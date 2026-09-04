@@ -25,12 +25,12 @@ Item {
 
     Process {
         id: reloadShellProc
-        command: ["sh", "-c", "pkill -f 'qs .*bar/shell.qml' 2>/dev/null || true; qs -c bar >/dev/null 2>&1 &"]
+        command: ["sh", "-c", "pkill -f 'qs .*bar/shell.qml' 2>/dev/null || true; qs -p \"$HOME/.config/quickshell/bar/shell.qml\" >/dev/null 2>&1 &"]
     }
 
     Process {
-        id: reloadHyprProc
-        command: ["hyprctl", "reload"]
+        id: reloadMangoProc
+        command: ["mmsg", "reload_config"]
     }
 
     Process {
@@ -45,42 +45,42 @@ Item {
 
     FileView {
         id: keybindsFile
-        path: Quickshell.env("HOME") + "/.config/hypr/modules/binds.lua"
+        path: Quickshell.env("HOME") + "/.config/mango/binds.conf"
         watchChanges: true
         onFileChanged: reload()
     }
 
     FileView {
         id: startupFile
-        path: Quickshell.env("HOME") + "/.config/hypr/modules/autostart.lua"
+        path: Quickshell.env("HOME") + "/.config/mango/autostart.conf"
         watchChanges: true
         onFileChanged: reload()
     }
 
     FileView {
         id: inputFile
-        path: Quickshell.env("HOME") + "/.config/hypr/modules/input.lua"
+        path: Quickshell.env("HOME") + "/.config/mango/input.conf"
         watchChanges: true
         onFileChanged: reload()
     }
 
     FileView {
         id: envFile
-        path: Quickshell.env("HOME") + "/.config/hypr/modules/env.lua"
+        path: Quickshell.env("HOME") + "/.config/mango/env.conf"
         watchChanges: true
         onFileChanged: reload()
     }
 
     FileView {
         id: monitorFile
-        path: Quickshell.env("HOME") + "/.config/hypr/modules/monitors.lua"
+        path: Quickshell.env("HOME") + "/.config/mango/monitors.conf"
         watchChanges: true
         onFileChanged: reload()
     }
 
     FileView {
         id: wallpaperScriptFile
-        path: Quickshell.env("HOME") + "/.config/hypr/scripts/wallcolors.py"
+        path: Quickshell.env("HOME") + "/.config/mango/scripts/wallcolors.py"
         watchChanges: true
         onFileChanged: reload()
     }
@@ -419,8 +419,8 @@ Item {
                     width: parent.width
                     spacing: 8
 
-                    InfoRow { title: "Hyprland binds"; detail: keybindsFile.path + " • " + root.fileStatus(keybindsFile) }
-                    InfoRow { title: "Hyprland startup"; detail: startupFile.path + " • " + root.fileStatus(startupFile) }
+                    InfoRow { title: "Mango binds"; detail: keybindsFile.path + " • " + root.fileStatus(keybindsFile) }
+                    InfoRow { title: "Mango startup"; detail: startupFile.path + " • " + root.fileStatus(startupFile) }
                     InfoRow { title: "Input config"; detail: inputFile.path + " • " + root.fileStatus(inputFile) }
                     InfoRow { title: "Monitor layout"; detail: monitorFile.path + " • " + root.fileStatus(monitorFile) }
                     InfoRow { title: "Environment config"; detail: envFile.path + " • " + root.fileStatus(envFile) }
@@ -436,10 +436,10 @@ Item {
                     }
 
                     ActionButton {
-                        label: "Reload Hyprland"
-                        description: "Apply updated Hyprland configuration."
+                        label: "Reload MangoWM"
+                        description: "Apply updated MangoWM configuration."
                         accentColor: Colors.blue
-                        onPressed: reloadHyprProc.running = true
+                        onPressed: reloadMangoProc.running = true
                     }
                 }
             }

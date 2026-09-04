@@ -5,9 +5,9 @@ import QtQuick
 import QtQuick.Layouts
 
 // ==========================================================================
-// PowerSurface.qml — вміст (без вікна) для Pill-режиму. Команди 1:1 з
-// Power/Panel.qml (той файл не чіпався) — hyprlock/suspend/exit/reboot/
-// poweroff, той самий bash-ланцюжок для "заблокувати і призупинити".
+// PowerSurface.qml — power/session actions for the MangoWM + Quickshell setup.
+// Uses swaylock for locking, systemctl for suspend/reboot/poweroff, and mmsg
+// for compositor exit.
 // ==========================================================================
 
 Item {
@@ -74,19 +74,13 @@ Item {
         PowerItem {
             text: "Заблокувати"
             icon: "\ue899" // lock
-            onClicked: root.run(["hyprlock", "-c", Quickshell.env("HOME") + "/.config/hypr/hyprlock/hyprlock.conf"])
+            onClicked: root.run(["swaylock", "-f", "-c", "000000", "--config", Quickshell.env("HOME") + "/.config/mango/swaylock/config"])
         }
 
         PowerItem {
             text: "Заблокувати і призупинити"
             icon: "\uf159" // bedtime
-            onClicked: root.run([
-                "bash", "-c",
-                "pidof hyprlock >/dev/null || hyprlock -c ~/.config/hypr/hyprlock/hyprlock.conf & " +
-                "for i in $(seq 1 30); do pgrep -x hyprlock >/dev/null && break; sleep 0.1; done; " +
-                "sleep 0.5; " +
-                "systemctl suspend"
-            ])
+            onClicked: root.run(["bash", "-lc", "pidof swaylock >/dev/null || swaylock -f -c 000000 --config ~/.config/mango/swaylock/config & sleep 0.8; systemctl suspend"])
         }
 
         Rectangle {
@@ -100,7 +94,7 @@ Item {
         PowerItem {
             text: "Вийти з сеансу"
             icon: "\ue9ba" // logout
-            onClicked: root.run(["hyprctl", "dispatch", "exit"])
+            onClicked: root.run(["mmsg", "quit"])
         }
 
         PowerItem {

@@ -92,8 +92,7 @@ cd "$REPO_DIR" || exit 1
 
 # ───────────────────────── pacman (офіційні репо) ─────────────────────────
 PACMAN_PKGS=(
-  # Ядро MangoWC (xdg-desktop-portal-wlr — загальний wlroots-портал,
-  # не Hyprland-специфічний; swayidle — заміна hypridle)
+  # Ядро MangoWC (xdg-desktop-portal-wlr — загальний wlroots-портал)
   xdg-desktop-portal-wlr swayidle
   # Шрифти
   ttf-material-symbols-variable ttf-fira-code
@@ -105,7 +104,7 @@ PACMAN_PKGS=(
   alacritty ghostty kitty nautilus dolphin firefox
   # Допоміжні скрипти
   libnotify cpupower gamemode playerctl bc starship
-  # edots-hypr еко-система
+  # edots еко-система
   figlet inotify-tools flatpak python-pip
   vlc
   # Термінал/шел/інше
@@ -175,11 +174,8 @@ AUR_PKGS=(
   zen-browser-bin
   matugen
 )
-# ПРИМІТКА: hyprscreen (запис екрана) прибрано зі списку — цей AUR-пакет
-# сам вимагає встановленого Hyprland як залежність, тож на MangoWC не
-# збереться. Еквівалента під MangoWC поки не підбирав — якщо запис екрана
-# потрібен, скажи, підберу окремо (наприклад wf-recorder напряму, без
-# hyprscreen-обгортки).
+# Для запису екрана тут використовується `wf-recorder` разом із `slurp`,
+# без окремої compositor-specific обгортки.
 
 if command -v yay >/dev/null 2>&1; then
   c_info "Ставлю AUR-пакети (${#AUR_PKGS[@]} шт.)..."
@@ -212,16 +208,12 @@ if ! command -v rishot >/dev/null 2>&1; then
   fi
 fi
 
-# ───────────────────────── HyprGlass — НЕ переноситься на MangoWC ─────────────────────────
-# HyprGlass — плагін через hyprpm (Hyprland-специфічна плагінна система),
-# прямого еквівалента на MangoWC немає. MangoWC дає blur/shadow/corner
-# radius/opacity нативно вбудовано через scenefx (не плагін, налаштування
-# в самому конфізі компоузера) — це заміна концепції, не порт коду, тому
-# свідомо НЕ намагаюсь тут це автоматично ввімкнути. Налаштуй blur/shadow
-# напряму в mango-конфізі (decorations.conf), коли з'явиться.
+# ───────────────────────── MangoWC notes ─────────────────────────
+# MangoWC already provides compositor-side appearance controls directly via
+# its own config, so there is no HyprGlass-style plugin setup here.
 
 # ───────────────────────── tui-player (Python venv) ─────────────────────────
-TUI_DIR="$REPO_DIR/edots-hypr/tui-player"
+TUI_DIR="$REPO_DIR/edots/tui-player"
 if [ -d "$TUI_DIR" ]; then
   c_info "Ставлю venv для tui-player..."
   python3 -m venv "$TUI_DIR/.venv" 2>/dev/null || sudo pacman -S --needed --noconfirm python
