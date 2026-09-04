@@ -1,8 +1,8 @@
 <div align="center">
 
-![Edots-Hyprland banner](docs/banner.png)
+![Edots-rice banner](docs/banner.png)
 
-# Edots-Hyprland
+# Edots-rice
 
 **Особистий Hyprland + Quickshell rice**
 
@@ -149,13 +149,13 @@ GameMode, HyprGlass — усе зібрано в один дотфайл-реп�
 сам, якщо його нема), потім сам клонує репо й запускає `sync.sh install`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Edgit13/Edots-Hyprland/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Edgit13/Edots-rice/master/install.sh | bash
 ```
 
 Або локально, якщо репо вже склоновано:
 
 ```bash
-git clone git@github.com:Edgit13/Edots-Hyprland.git ~/Dotfiles
+git clone git@github.com:Edgit13/Edots-rice.git ~/Dotfiles
 cd ~/Dotfiles
 ./install.sh
 ```
@@ -177,7 +177,7 @@ git clone https://github.com/Edgit13/Edot-Wallpapers.git ~/Pictures/Wallpapers
 ### Лише symlink'и (пакети вже стоять)
 
 ```bash
-git clone git@github.com:Edgit13/Edots-Hyprland.git ~/Dotfiles
+git clone git@github.com:Edgit13/Edots-rice.git ~/Dotfiles
 cd ~/Dotfiles
 
 ./sync.sh install
@@ -242,7 +242,7 @@ hl.permission("/usr/(bin|local/bin)/hyprpm", "plugin", "allow")
 ## Структура репо
 
 ```
-Edots-Hyprland/
+Edots-rice/
 ├── sync.sh              # symlink-синхронізатор
 ├── hypr/                # Hyprland (Lua) + hyprlock/hypridle + wallcolors.py
 ├── quickshell/bar/       # нотч-бар (QML)

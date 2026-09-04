@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 #
-# install.sh — повний бутстрап Edots-Hyprland на Arch-based дистрибутивах
+# install.sh — повний бутстрап Edots-rice на Arch-based дистрибутивах
 # (Arch, EndeavourOS, Manjaro, CachyOS...).
 #
 # Ставить усі пакети, шрифти й Python-залежності, потрібні цьому рису,
 # бутстрапить yay якщо його нема, і в кінці передає естафету sync.sh.
 #
 # Використання:
-#   curl -fsSL https://raw.githubusercontent.com/Edgit13/Edots-Hyprland/master/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Edgit13/Edots-rice/master/install.sh | bash
 # або локально:
-#   git clone https://github.com/Edgit13/Edots-Hyprland.git ~/Dotfiles
+#   git clone https://github.com/Edgit13/Edots-rice.git ~/Dotfiles
 #   cd ~/Dotfiles && ./install.sh
 #
 set -uo pipefail
 
-REPO_URL="https://github.com/Edgit13/Edots-Hyprland.git"
+REPO_URL="https://github.com/Edgit13/Edots-rice.git"
 REPO_DIR="${EDOTS_DIR:-$HOME/Dotfiles}"
 
 # ─────────────────────────── логування ────────────────────────────
@@ -92,8 +92,9 @@ cd "$REPO_DIR" || exit 1
 
 # ───────────────────────── pacman (офіційні репо) ─────────────────────────
 PACMAN_PKGS=(
-  # Ядро Hyprland
-  hyprland hyprlock hypridle xdg-desktop-portal-hyprland
+  # Ядро MangoWC (xdg-desktop-portal-wlr — загальний wlroots-портал,
+  # не Hyprland-специфічний; swayidle — заміна hypridle)
+  xdg-desktop-portal-wlr swayidle
   # Шрифти
   ttf-material-symbols-variable ttf-fira-code
   # CLI-інструменти бару
@@ -164,6 +165,8 @@ fi
 
 # ───────────────────────── AUR (через yay) ─────────────────────────
 AUR_PKGS=(
+  mangowc-git
+  swaylock-effects-git
   quickshell
   ttf-jetbrains-mono-nerd
   swaync
@@ -171,8 +174,12 @@ AUR_PKGS=(
   awww
   zen-browser-bin
   matugen
-  hyprscreen
 )
+# ПРИМІТКА: hyprscreen (запис екрана) прибрано зі списку — цей AUR-пакет
+# сам вимагає встановленого Hyprland як залежність, тож на MangoWC не
+# збереться. Еквівалента під MangoWC поки не підбирав — якщо запис екрана
+# потрібен, скажи, підберу окремо (наприклад wf-recorder напряму, без
+# hyprscreen-обгортки).
 
 if command -v yay >/dev/null 2>&1; then
   c_info "Ставлю AUR-пакети (${#AUR_PKGS[@]} шт.)..."
@@ -205,17 +212,13 @@ if ! command -v rishot >/dev/null 2>&1; then
   fi
 fi
 
-# ───────────────────────── HyprGlass (опційний плагін) ─────────────────────────
-if command -v hyprpm >/dev/null 2>&1; then
-  c_info "Ставлю HyprGlass через hyprpm (опційно)..."
-  hyprpm update >/dev/null 2>&1
-  if hyprpm add https://github.com/hyprnux/hyprglass >/dev/null 2>&1; then
-    hyprpm enable hyprglass >/dev/null 2>&1 && c_ok "HyprGlass" || c_warn "HyprGlass додано, але не увімкнувся — постав вручну: hyprpm enable hyprglass"
-  else
-    c_warn "hyprpm add hyprglass не вдався (не критично, це опційний ефект) — постав вручну за потреби"
-    FAILED+=("hyprpm:hyprglass")
-  fi
-fi
+# ───────────────────────── HyprGlass — НЕ переноситься на MangoWC ─────────────────────────
+# HyprGlass — плагін через hyprpm (Hyprland-специфічна плагінна система),
+# прямого еквівалента на MangoWC немає. MangoWC дає blur/shadow/corner
+# radius/opacity нативно вбудовано через scenefx (не плагін, налаштування
+# в самому конфізі компоузера) — це заміна концепції, не порт коду, тому
+# свідомо НЕ намагаюсь тут це автоматично ввімкнути. Налаштуй blur/shadow
+# напряму в mango-конфізі (decorations.conf), коли з'явиться.
 
 # ───────────────────────── tui-player (Python venv) ─────────────────────────
 TUI_DIR="$REPO_DIR/edots-hypr/tui-player"
@@ -262,7 +265,7 @@ fi
 # ───────────────────────── підсумок ─────────────────────────
 echo
 if [ "${#FAILED[@]}" -eq 0 ]; then
-  c_ok "Все встановилось без помилок. Перелогінься в Hyprland і насолоджуйся."
+  c_ok "Все встановилось без помилок. Перелогінься в MangoWC і насолоджуйся."
 else
   c_warn "Встановлення завершено, але з ${#FAILED[@]} пропусками:"
   for f in "${FAILED[@]}"; do

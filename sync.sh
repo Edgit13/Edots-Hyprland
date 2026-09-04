@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# sync.sh — синхронізатор Edots-Hyprland
+# sync.sh — синхронізатор Edots-rice
 #
 # Лінкує конфіги з репозиторію напряму в ~/.config через symlink.
 # Завдяки цьому редагування файлу в репо (~/Dotfiles/...) і в
