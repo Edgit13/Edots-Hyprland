@@ -6,11 +6,13 @@ import QtQuick
 Singleton {
     id: root
 
+    readonly property string quickshellWallpaperPath: Quickshell.env("HOME") + "/.config/quickshell/current-wallpaper.txt"
     readonly property string colorsPath: Quickshell.env("HOME") + "/.config/mango/swaylock/colors.conf"
     readonly property string awwwStatePath: Quickshell.env("HOME") + "/.cache/awww/last"
     readonly property string avatarPath: Quickshell.env("HOME") + "/.face"
 
     property string wallpaperPath: ""
+    readonly property string wallpaperSource: wallpaperPath.length > 0 ? wallpaperPath : ""
     property string timeText: Qt.formatTime(new Date(), "HH:mm")
     property string dateText: Qt.formatDate(new Date(), "dddd, dd MMMM yyyy")
     property string weatherText: ""
@@ -67,16 +69,38 @@ Singleton {
             root.wallpaperPath = match[1].trim().replace(/^"|"$/g, "")
     }
 
+    function applyDirectWallpaper(raw) {
+        const candidate = raw ? raw.trim().replace(/^"|"$/g, "") : ""
+        if (candidate.length > 0)
+            root.wallpaperPath = candidate
+    }
+
+    FileView {
+        id: quickshellWallpaperFile
+        path: root.quickshellWallpaperPath
+        watchChanges: true
+        printErrors: false
+        onTextChanged: root.applyDirectWallpaper(text())
+        Component.onCompleted: root.applyDirectWallpaper(text())
+    }
+
     FileView {
         id: colorsFile
         path: root.colorsPath
         watchChanges: true
         onFileChanged: {
             reload()
-            root.applyWallpaperPath(text())
+            if (root.wallpaperPath.length === 0)
+                root.applyWallpaperPath(text())
         }
-        onTextChanged: root.applyWallpaperPath(text())
-        Component.onCompleted: root.applyWallpaperPath(text())
+        onTextChanged: {
+            if (root.wallpaperPath.length === 0)
+                root.applyWallpaperPath(text())
+        }
+        Component.onCompleted: {
+            if (root.wallpaperPath.length === 0)
+                root.applyWallpaperPath(text())
+        }
     }
 
     FileView {
@@ -85,18 +109,12 @@ Singleton {
         watchChanges: true
         printErrors: false
         onTextChanged: {
-            if (root.wallpaperPath.length === 0) {
-                const candidate = text().trim().replace(/^"|"$/g, "")
-                if (candidate.length > 0)
-                    root.wallpaperPath = candidate
-            }
+            if (root.wallpaperPath.length === 0)
+                root.applyDirectWallpaper(text())
         }
         Component.onCompleted: {
-            if (root.wallpaperPath.length === 0) {
-                const candidate = text().trim().replace(/^"|"$/g, "")
-                if (candidate.length > 0)
-                    root.wallpaperPath = candidate
-            }
+            if (root.wallpaperPath.length === 0)
+                root.applyDirectWallpaper(text())
         }
     }
 }

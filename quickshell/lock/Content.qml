@@ -10,24 +10,20 @@ Item {
 
     required property var auth
 
-    Rectangle {
-        anchors.fill: parent
-        color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, 0.42)
-    }
-
     Image {
+        id: wallpaperImage
         anchors.fill: parent
-        source: LockState.wallpaperPath.length > 0 ? "file://" + LockState.wallpaperPath : ""
+        source: LockState.wallpaperSource
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: false
-        opacity: 0.32
+        opacity: status === Image.Ready ? 1.0 : 0
         visible: source.length > 0
     }
 
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, 0.34)
+        color: Qt.rgba(Colors.bg0.r, Colors.bg0.g, Colors.bg0.b, wallpaperImage.status === Image.Ready ? 0.38 : 0.82)
     }
 
     readonly property var player: {
@@ -134,6 +130,18 @@ Item {
                 color: Colors.grey2
                 font.family: "SF Pro Display"
                 font.pixelSize: 18
+            }
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                visible: wallpaperImage.status !== Image.Ready
+                text: LockState.wallpaperPath.length > 0 ? "Wallpaper: " + LockState.wallpaperPath : "Wallpaper path not found"
+                color: Colors.grey2
+                font.family: "SF Pro Display"
+                font.pixelSize: 11
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WrapAnywhere
+                Layout.maximumWidth: 560
             }
 
             AuthForm {

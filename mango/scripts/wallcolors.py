@@ -18,6 +18,7 @@ MANGO_SWAYLOCK_COLORS = MANGO_DIR / "swaylock" / "colors.conf"
 KITTY_COLORS_CONF = CONFIG / "kitty" / "kitty-colors.conf"
 GHOSTTY_COLORS_CONF = CONFIG / "ghostty" / "ghostty-colors.conf"
 QUICKSHELL_COLORS_JSON = CONFIG / "quickshell" / "colors.json"
+QUICKSHELL_WALLPAPER_FILE = CONFIG / "quickshell" / "current-wallpaper.txt"
 ROFI_COLORS_RASI = CONFIG / "rofi" / "colors.rasi"
 SWAYNC_COLORS_CSS = CONFIG / "swaync" / "colors.css"
 GTK4_COLORS_CSS = CONFIG / "gtk-4.0" / "gtk-colors.css"
@@ -120,8 +121,9 @@ def write_json(path: Path, data):
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
-def write_quickshell_colors(p: dict):
+def write_quickshell_colors(p: dict, wallpaper_path: str):
     write_json(QUICKSHELL_COLORS_JSON, p)
+    write(QUICKSHELL_WALLPAPER_FILE, wallpaper_path + "\n")
     write_json(MANGO_COLORS_JSON, p)
 
 
@@ -242,7 +244,7 @@ def main():
     wallpaper = os.path.abspath(os.path.expanduser(sys.argv[1]))
     color = get_source_color(wallpaper)
     palette = build_palette(color)
-    write_quickshell_colors(palette)
+    write_quickshell_colors(palette, wallpaper)
     write_kitty_colors(palette)
     write_ghostty_colors(palette)
     write_rofi_colors(palette)
