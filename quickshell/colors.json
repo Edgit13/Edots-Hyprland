@@ -1,0 +1,19 @@
+{
+  "bg0": "#06080f",
+  "bg1": "#0a0f1a",
+  "bg2": "#0f1729",
+  "bg3": "#152037",
+  "bg4": "#1c2a4a",
+  "fg": "#dadee7",
+  "accent": "#adc6ff",
+  "red": "#4db8ff",
+  "orange": "#6667ff",
+  "yellow": "#c166ff",
+  "green": "#ff4d71",
+  "aqua": "#ff741a",
+  "blue": "#fffe4d",
+  "purple": "#80ff98",
+  "grey0": "#1c2a4a",
+  "grey1": "#314a81",
+  "grey2": "#90a5d5"
+}

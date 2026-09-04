@@ -1,0 +1,62 @@
+include ~/.config/mango/swaylock/colors.conf
+
+ignore-empty-password
+daemonize
+show-failed-attempts
+clock
+indicator
+indicator-idle-visible
+indicator-caps-lock
+
+# Typography
+font=JetBrainsMono Nerd Font
+font-size=24
+time-font=JetBrainsMono Nerd Font
+time-size=104
+date-font=JetBrainsMono Nerd Font
+date-size=22
+timestr=%H:%M
+datestr=%A, %d %B %Y
+
+# Wallpaper-driven background
+image=$wallpaper_path
+scaling=fill
+effect-blur=18x5
+effect-vignette=0.45:0.30
+effect-greyscale
+effect-pixelate=1
+fade-in=0.30
+
+# Minimal glass indicator
+indicator-radius=118
+indicator-thickness=8
+inside-color=00000000
+inside-clear-color=00000000
+inside-caps-lock-color=00000000
+inside-ver-color=00000000
+inside-wrong-color=00000000
+ring-color=$ring_color
+ring-clear-color=$ring_clear_color
+ring-caps-lock-color=$ring_caps_color
+ring-ver-color=$ring_ver_color
+ring-wrong-color=$ring_wrong_color
+key-hl-color=$key_hl_color
+bs-hl-color=$bs_hl_color
+line-color=00000000
+line-clear-color=00000000
+line-caps-lock-color=00000000
+line-ver-color=00000000
+line-wrong-color=00000000
+separator-color=00000000
+text-color=ffffffff
+text-clear-color=ffd166ff
+text-caps-lock-color=ffa94dff
+text-ver-color=7bd88fff
+text-wrong-color=ff6b6bff
+layout-bg-color=00000000
+layout-border-color=00000000
+layout-text-color=$layout_text_color
+
+# Centered composition
+indicator-x-position=960
+indicator-y-position=860
