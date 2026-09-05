@@ -13,7 +13,7 @@ GameMode, swaylock і MangoWM-конфіг — усе зібрано в один
 [![Quickshell](https://img.shields.io/badge/Quickshell-QML-1E1E2E?style=for-the-badge)](https://quickshell.org/)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge)](#ліцензія)
 
-надихнувся [Dynamic-island-for-arch](https://github.com/patheonsceo/Dynamic-island-for-arch)
+надихнувся [Dynamic-island-for-arch](https://github.com/patheonsceo/Dynamic-island-for-arch) та [Ricelin](https://github.com/Gakuseei/Ricelin)
 
 </div>
 
