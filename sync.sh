@@ -20,6 +20,7 @@ BACKUP_DIR="$HOME/.config-backup-$(date +%Y%m%d-%H%M%S)"
 
 # формат: "шлях_у_репо:ціль_symlink'у"
 LINKS=(
+  "swaylock:$CONFIG_HOME/swaylock"
   "alacritty:$CONFIG_HOME/alacritty"
   "fastfetch:$CONFIG_HOME/fastfetch"
   "fish:$CONFIG_HOME/fish"
