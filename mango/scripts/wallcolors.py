@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 HOME = Path.home()
@@ -256,6 +257,14 @@ def main():
     write_kdeglobals(palette)
     logging.info("Updated MangoWM color pipeline for wallpaper: %s", wallpaper)
 
+    # Wait briefly to ensure file writes are fully flushed to disk
+    time.sleep(0.25)
+
+    # Reload SwayNC
+    subprocess.run(["swaync-client", "-rs"])
+
+    # Restart Quickshell to apply the new colors.json
+    subprocess.run("killall quickshell; quickshell &", shell=True)
 
 if __name__ == "__main__":
     main()
