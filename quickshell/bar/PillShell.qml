@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import "root:/"
 import Quickshell
 import Quickshell.Io
@@ -5,36 +7,32 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
-// ==========================================================================
-// PillShell.qml — САМОСТІЙНИЙ вхід для перевірки одного морфуючого пілла
-// (Ricelin-натхненний дизайн, github.com/Gakuseei/Ricelin). НЕ підключений
-// до основного shell.qml — той не чіпався. Запуск окремо, без впливу на
-// робочий бар:
-//
-//   qs -p ~/.config/quickshell/bar/PillShell.qml
-//
-// Поведінка: idle показує ТІЛЬКИ годинник (компактна капсула). Наведення
-// миші розгортає в "hover" — воркспейси + годинник + тригери модулів
-// (wallpaper/media/wifi/bluetooth). Клік по тригеру морфить пілюлю в сам
-// модуль замість окремого вікна. Escape (централізований обробник на pill,
-// WlrKeyboardFocus.OnDemand) закриває будь-який відкритий модуль назад
-// в idle. Поверхні: wallpaper (WallpaperSurface.qml), media
-// (MediaSurface.qml), wifi (WifiSurface.qml — повний менеджер, бекенд
-// WifiService.qml), link (LinkSurface.qml, простий bluetooth-тогл — файл
-// НЕ чіпався), power (PowerSurface.qml, команди 1:1 з Power/Panel.qml,
-// той файл не чіпався), mixer (MixerSurface.qml — батарея + гучність +
-// яскравість, 1:1 з Battery.qml/Dash/Panel.qml sliders, жоден не
-// чіпався), clipboard (ClipboardSurface.qml, cliphist list/decode/
-// delete/wipe 1:1 з Clipboard/Panel.qml + ConfirmWipe.qml, жоден не
-// чіпався), launcher (LauncherSurface.qml — нативний QML-лаунчер замість
-// Rofi, через вбудований Quickshell.DesktopEntries API, без ручного
-// парсингу .desktop-файлів; binds.lua "Super+Space" не чіпався/лишається
-// паралельно). Решта поверхонь (calendar/tray) —
-// наступні кроки.
-// ==========================================================================
-
 ShellRoot {
     id: root
+
+    // Reusable trigger icon used in the hover bar.
+    // Emits activated() on click so callers can stay in the enclosing scope.
+    component TriggerIcon: Text {
+        required property string glyph
+        property color hoverColor: Colors.accent
+        signal activated()
+
+        Layout.alignment: Qt.AlignVCenter
+        text: glyph
+        color: iconHover.hovered ? hoverColor : Colors.grey1
+        font { family: "Material Symbols Rounded"; pixelSize: 15 }
+
+        Behavior on color { ColorAnimation { duration: 120 } }
+
+        HoverHandler { id: iconHover }
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -4
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.activated()
+        }
+    }
 
     function openSurface(surface) {
         activeSurface = surface
@@ -90,8 +88,7 @@ ShellRoot {
         running: false
     }
 
-    // "idle" (тільки годинник) | "hover" (розгорнутий рядок: воркспейси +
-    // годинник + тригери) | "wallpaper" | "media" | "link" — модулі.
+    // "idle" (only clock) | "hover" (workspaces + clock + triggers) | surface name
     property string activeSurface: "idle"
 
     readonly property int idleHeight: 36
@@ -132,9 +129,8 @@ ShellRoot {
             exclusionMode: ExclusionMode.Ignore
             exclusiveZone: 0
 
-            // OnDemand — панель отримує клавіатурний фокус лише коли в неї
-            // клікнули (наприклад, відкрили модуль), а не постійно. Так
-            // Escape не "краде" клавіатуру в інших вікон у стані idle/hover.
+            // OnDemand — keyboard focus only when a surface is open,
+            // so Escape doesn't steal keys from other windows in idle/hover.
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
             anchors {
@@ -153,9 +149,7 @@ ShellRoot {
                 anchors.topMargin: GameModeState.active ? 0 : 4
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                // Клавіатурний фокус для Escape. Один централізований
-                // обробник нижче — не додаємо окремий Keys-хендлер у
-                // кожен модуль (wallpaper/media/link).
+                // Central Escape handler — surfaces do not each manage their own.
                 focus: true
                 Keys.onEscapePressed: (event) => {
                     if (root.activeSurface !== "idle") {
@@ -174,9 +168,7 @@ ShellRoot {
                 height: (root.activeSurface === "idle" || root.activeSurface === "hover")
                     ? root.idleHeight : root.expandedHeight
 
-                // Idle/hover — повна капсула (stadium). Розгорнутий модуль —
-                // м'яке заокруглення (як у калькуляторі/мікшері референсу),
-                // а не суцільний stadium на всю висоту.
+                // Full stadium in idle/hover; soft corner radius when a surface is open.
                 radius: GameModeState.active ? 0
                     : ((root.activeSurface === "idle" || root.activeSurface === "hover") ? height / 2 : 28)
 
@@ -192,10 +184,7 @@ ShellRoot {
 
                 HoverHandler {
                     id: pillHover
-                    // idle -> hover при наведенні, назад в idle коли миша
-                    // йде геть — тільки між цими двома станами; відкритий
-                    // модуль (wallpaper/media/link) сам себе не згортає від
-                    // втрати наведення, тільки через Escape чи клік по фону.
+                    // idle <-> hover only; open surfaces close via Escape or background click.
                     onHoveredChanged: {
                         if (hovered && root.activeSurface === "idle") {
                             root.activeSurface = "hover"
@@ -205,8 +194,6 @@ ShellRoot {
                     }
                 }
 
-                // Те саме "дихання" рамки, що й в IslandPill/notchPill
-                // основного бару — узгоджена мова анімацій.
                 SequentialAnimation {
                     running: !GameModeState.active
                     loops: Animation.Infinite
@@ -218,40 +205,24 @@ ShellRoot {
                     property real opacity: 0.18
                 }
 
-                Behavior on width {
-                    NumberAnimation { duration: 320; easing.type: Easing.OutBack; easing.overshoot: 1.05 }
-                }
-                Behavior on height {
-                    NumberAnimation { duration: 320; easing.type: Easing.OutBack; easing.overshoot: 1.05 }
-                }
-                Behavior on radius {
-                    NumberAnimation { duration: 220 }
-                }
-                Behavior on scale {
-                    NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.8 }
-                }
-                Behavior on border.width {
-                    NumberAnimation { duration: 160 }
-                }
-                Behavior on border.color {
-                    ColorAnimation { duration: 160 }
-                }
+                Behavior on width  { NumberAnimation { duration: 320; easing.type: Easing.OutBack; easing.overshoot: 1.05 } }
+                Behavior on height { NumberAnimation { duration: 320; easing.type: Easing.OutBack; easing.overshoot: 1.05 } }
+                Behavior on radius { NumberAnimation { duration: 220 } }
+                Behavior on scale  { NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.8 } }
+                Behavior on border.width { NumberAnimation { duration: 160 } }
+                Behavior on border.color { ColorAnimation  { duration: 160 } }
 
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    // Клік по фону закриває тільки реально відкритий модуль
-                    // (wallpaper/media/link). "hover" сам згортається при
-                    // втраті наведення (HoverHandler вище) — не займаємось
-                    // ним тут, щоб уникнути конфлікту двох джерел стану.
+                    // Close only a real open surface; hover collapses via its own HoverHandler.
                     onClicked: {
-                        if (root.activeSurface !== "idle" && root.activeSurface !== "hover") {
+                        if (root.activeSurface !== "idle" && root.activeSurface !== "hover")
                             root.activeSurface = "idle"
-                        }
                     }
                 }
 
-                // ---- idle-стан: ТІЛЬКИ годинник ----
+                // ---- idle state: clock only ----
                 Item {
                     id: idleClockRow
                     anchors.centerIn: parent
@@ -260,9 +231,7 @@ ShellRoot {
                     visible: root.activeSurface === "idle"
                     opacity: visible ? 1 : 0
 
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
 
                     Clock {
                         id: idleClock
@@ -270,7 +239,7 @@ ShellRoot {
                     }
                 }
 
-                // ---- hover-стан: Workspaces + Clock + тригери модулів ----
+                // ---- hover state: Workspaces + Clock + trigger icons ----
                 RowLayout {
                     id: hoverRow
                     anchors.centerIn: parent
@@ -278,13 +247,9 @@ ShellRoot {
                     visible: root.activeSurface === "hover"
                     opacity: visible ? 1 : 0
 
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
 
-                    Workspaces {
-                        Layout.alignment: Qt.AlignVCenter
-                    }
+                    Workspaces { Layout.alignment: Qt.AlignVCenter }
 
                     Rectangle {
                         width: 1
@@ -295,9 +260,7 @@ ShellRoot {
                         color: Qt.rgba(Colors.fg.r, Colors.fg.g, Colors.fg.b, 0.15)
                     }
 
-                    Clock {
-                        Layout.alignment: Qt.AlignVCenter
-                    }
+                    Clock { Layout.alignment: Qt.AlignVCenter }
 
                     Rectangle {
                         width: 1
@@ -308,339 +271,92 @@ ShellRoot {
                         color: Qt.rgba(Colors.fg.r, Colors.fg.g, Colors.fg.b, 0.15)
                     }
 
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue1bc" // wallpaper (той самий codepoint, що Wallpaper/Button.qml)
-                        color: wallTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: wallTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4 // трохи ширша клікабельна зона
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "wallpaper"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue405" // music_note (той самий codepoint, що Dash/Panel.qml)
-                        color: mediaTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: mediaTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "media"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue63e" // wifi — тепер відкриває повний Wi-Fi менеджер (WifiSurface)
-                        color: wifiTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: wifiTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "wifi"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue1a7" // bluetooth (той самий codepoint, що Dash/Panel.qml ToggleChip) —
-                                        // окрема іконка, щоб LinkSurface (bluetooth-рядок) лишався
-                                        // так само досяжним, файл не чіпався
-                        color: linkTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: linkTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "link"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\uf8c7" // power_settings_new (той самий codepoint, що Power/Button.qml)
-                        color: powerTriggerHover.hovered ? Colors.red : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: powerTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "power"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue429" // tune (мікшер: батарея + гучність + яскравість)
-                        color: mixerTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: mixerTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "mixer"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue14f" // content_paste (той самий codepoint, що Clipboard/Button.qml)
-                        color: clipTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: clipTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "clipboard"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue7f4" // notifications
-                        color: notificationsTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: notificationsTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: notificationsProc.running = true
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue5c3" // apps (той самий codepoint, що Menu/Button.qml)
-                        color: launcherTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: launcherTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "launcher"
-                        }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "\ue8b8" // settings
-                        color: settingsTriggerHover.hovered ? Colors.accent : Colors.grey1
-                        font { family: "Material Symbols Rounded"; pixelSize: 15 }
-
-                        Behavior on color {
-                            ColorAnimation { duration: 120 }
-                        }
-
-                        HoverHandler {
-                            id: settingsTriggerHover
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.activeSurface = "settings"
-                        }
-                    }
+                    TriggerIcon { glyph: "\ue1bc"; onActivated: root.activeSurface = "wallpaper" }
+                    TriggerIcon { glyph: "\ue405"; onActivated: root.activeSurface = "media" }
+                    TriggerIcon { glyph: "\ue63e"; onActivated: root.activeSurface = "wifi" }
+                    TriggerIcon { glyph: "\ue1a7"; onActivated: root.activeSurface = "link" }
+                    TriggerIcon { glyph: "\uf8c7"; hoverColor: Colors.red; onActivated: root.activeSurface = "power" }
+                    TriggerIcon { glyph: "\ue429"; onActivated: root.activeSurface = "mixer" }
+                    TriggerIcon { glyph: "\ue14f"; onActivated: root.activeSurface = "clipboard" }
+                    TriggerIcon { glyph: "\ue7f4"; onActivated: notificationsProc.running = true }
+                    TriggerIcon { glyph: "\ue5c3"; onActivated: root.activeSurface = "launcher" }
+                    TriggerIcon { glyph: "\ue8b8"; onActivated: root.activeSurface = "settings" }
                 }
 
-                // ---- поверхня wallpaper ----
-                WallpaperSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "wallpaper"
-                    opacity: visible ? 1 : 0
+                // ---- surfaces — loaded on demand, unloaded when closed ----
 
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "wallpaper"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: WallpaperSurface {}
                 }
 
-                // ---- поверхня media ----
-                MediaSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "media"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "media"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: MediaSurface {}
                 }
 
-                // ---- поверхня power ----
-                PowerSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "power"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "power"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: PowerSurface {}
                 }
 
-                // ---- поверхня mixer (батарея + гучність + яскравість) ----
-                MixerSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "mixer"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "mixer"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: MixerSurface {}
                 }
 
-                // ---- поверхня clipboard ----
-                ClipboardSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "clipboard"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "clipboard"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: ClipboardSurface {}
                 }
 
-                // ---- поверхня launcher ----
-                LauncherSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "launcher"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
-
-                    onAppLaunched: root.activeSurface = "idle"
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "launcher"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: LauncherSurface {}
+                    onLoaded: item.appLaunched.connect(function() { root.activeSurface = "idle" })
                 }
 
-                // ---- поверхня wifi (повний менеджер) ----
-                WifiSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "wifi"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "wifi"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: WifiSurface {}
                 }
 
-                // ---- поверхня settings ----
-                SettingsSurface {
-                    id: settingsSurface
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "settings"
-                    opacity: visible ? 1 : 0
-                    rootWindow: root
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "settings"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: SettingsSurface {}
+                    onLoaded: item.rootWindow = root
                 }
 
-                // ---- поверхня link (простий bluetooth-тогл, не чіпалась) ----
-                LinkSurface {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    visible: root.activeSurface === "link"
-                    opacity: visible ? 1 : 0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150 }
-                    }
+                Loader {
+                    anchors.fill: parent; anchors.margins: 14
+                    active: root.activeSurface === "link"
+                    opacity: active ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    sourceComponent: LinkSurface {}
                 }
             }
         }

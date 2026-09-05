@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import "root:/"
 import Quickshell
 import Quickshell.Services.Mpris
@@ -13,7 +14,14 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property var player: Mpris.players.values.length > 0 ? Mpris.players.values[0] : null
+    readonly property var player: {
+        const list = Mpris.players.values
+        if (!list || list.length === 0) return null
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].isPlaying) return list[i]
+        }
+        return list[0]
+    }
 
     ColumnLayout {
         anchors.fill: parent

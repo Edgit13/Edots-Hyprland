@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec swaylock -f -c 000000 --config "$HOME/.config/mango/swaylock/config"
+exec swaylock -i $(cat ~/.config/quickshell/current-wallpaper.txt)

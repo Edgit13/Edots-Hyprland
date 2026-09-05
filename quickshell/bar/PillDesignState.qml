@@ -15,7 +15,7 @@ Singleton {
         id: stateFile
         path: Quickshell.env("HOME") + "/.cache/quickshell/pilldesign.state"
         watchChanges: true
-        onFileChanged: reload()
         onTextChanged: root.active = text().trim() === "1"
+        Component.onCompleted: root.active = text().trim() === "1"
     }
 }

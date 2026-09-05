@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Services.UPower
 import QtQuick
@@ -8,12 +9,12 @@ RowLayout {
     spacing: 6
 
     property var battery: UPower.displayDevice
-    property bool charging: battery.state === UPowerDeviceState.Charging
-    readonly property int level: Math.round(battery.percentage * 100)
+    property bool charging: battery?.state === UPowerDeviceState.Charging
+    readonly property int level: Math.round((battery?.percentage ?? 0) * 100)
 
     readonly property string icon: {
         if (charging) return String.fromCodePoint(0xe1a3) // battery_charging_full
-        if (level >= 100) return String.fromCodePoint(0xe1a5) // battery_full
+        if (level >= 99) return String.fromCodePoint(0xe1a5) // battery_full
         if (level < 10) return String.fromCodePoint(0xe19c) // battery_alert
 
         // battery_1_bar .. battery_6_bar

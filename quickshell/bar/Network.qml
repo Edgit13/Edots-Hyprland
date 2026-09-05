@@ -10,12 +10,13 @@ Item {
     implicitWidth: mainLayout.implicitWidth
     implicitHeight: mainLayout.implicitHeight
 
-    // Стани для швидкості мережі та пінгу
+    // Set to false when the surface is not visible to pause polling.
+    property bool active: true
+
     property string pingMs: "--"
     property string rxRateStr: "0.0 B/s"
     property string txRateStr: "0.0 B/s"
 
-    // Оновлення мережевих даних через таймер і Shell-процес
     Process {
         id: statsProc
         command: ["bash", "-c", "
@@ -74,8 +75,8 @@ Item {
     }
 
     Timer {
-        interval: 3000
-        running: true
+        interval: 5000
+        running: networkRoot.active
         repeat: true
         triggeredOnStart: true
         onTriggered: {
@@ -85,7 +86,7 @@ Item {
         }
     }
 
-    // Таймер затримки для плавного закриття підказки
+    // Delay timer for smooth tooltip hide
     Timer {
         id: hideTimer
         interval: 150
@@ -178,7 +179,6 @@ Item {
         }
     }
 
-    // Спливаюче міні-віконце (PopupWindow) з безпосередньою прив'язкою до елемента
     PopupWindow {
         id: infoTooltip
         visible: false
@@ -201,7 +201,6 @@ Item {
             border.width: 1
             radius: 10
 
-            // Внутрішня світла облямівка ефекту скла
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: 1
@@ -216,7 +215,6 @@ Item {
                 anchors.centerIn: parent
                 spacing: 6
 
-                // Заголовок
                 Text {
                     text: "МЕРЕЖЕВА СТАТИСТИКА"
                     color: Colors.accent
@@ -231,7 +229,6 @@ Item {
                     color: Qt.rgba(Colors.fg.r, Colors.fg.g, Colors.fg.b, 0.15)
                 }
 
-                // Рядок: Ping
                 RowLayout {
                     spacing: 12
                     Text {
@@ -248,7 +245,6 @@ Item {
                     }
                 }
 
-                // Рядок: Завантаження (Download)
                 RowLayout {
                     spacing: 12
                     Text {
@@ -265,7 +261,6 @@ Item {
                     }
                 }
 
-                // Рядок: Вивантаження (Upload)
                 RowLayout {
                     spacing: 12
                     Text {

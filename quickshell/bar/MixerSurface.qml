@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import "root:/"
 import Quickshell
 import Quickshell.Io
@@ -31,7 +32,7 @@ Item {
             }
         }
     }
-    Process { id: brightnessSetProc }
+    Process { id: brightnessSetProc; command: [] }
 
     function setBrightness(val) {
         let clamped = Math.max(5, Math.min(100, val))
@@ -40,7 +41,7 @@ Item {
         brightnessSetProc.running = true
     }
 
-    Component.onCompleted: brightnessQuery.running = true
+    Component.onCompleted: { if (!brightnessQuery.running) brightnessQuery.running = true }
 
     PwObjectTracker {
         objects: [root.sink]
